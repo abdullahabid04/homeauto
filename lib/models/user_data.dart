@@ -57,11 +57,14 @@ class User {
 
 class RequestUser {
   NetworkUtil _netUtil = new NetworkUtil();
-  static final baseURL = 'https://homeautomations.tk/brijesh/server_files';
-  static final finalURL = baseURL + "/user_actions.php";
-  // static final db = new DatabaseHelper();
+  static final baseURL = 'http://care-engg.com/api/profile';
+  static final getUserURL = baseURL + "/get";
+  static final updateUserURL = baseURL + "/update";
+  static final changePasswordURL = baseURL + "/changepass";
+  static final appLinkURL = baseURL + "/applink";
+
   Future<User> getUserDetails(String user) async {
-    return _netUtil.post(finalURL, body: {"email": user, "action": "1"}).then(
+    return _netUtil.post(getUserURL, body: {"email": user, "action": "1"}).then(
         (dynamic res) {
       print(res.toString());
       if (res["error"]) throw new FormException(res["errorMessage"]);
@@ -71,7 +74,7 @@ class RequestUser {
 
   Future<User> updateUser(String email, String name, String address,
       String city, String mobile) async {
-    return _netUtil.post(finalURL, body: {
+    return _netUtil.post(updateUserURL, body: {
       "email": email,
       "name": name,
       "address": address,
@@ -87,7 +90,7 @@ class RequestUser {
 
   Future<User> changePassword(
       String email, String oldPassword, String newPassword) async {
-    return _netUtil.post(finalURL, body: {
+    return _netUtil.post(changePasswordURL, body: {
       "email": email,
       "oldPassword": oldPassword,
       "newPassword": newPassword,
@@ -106,7 +109,7 @@ class RequestUser {
     } else {
       os = "false";
     }
-    return _netUtil.post(finalURL, body: {
+    return _netUtil.post(appLinkURL, body: {
       "action": "4",
       "isIOS": os,
     }).then((dynamic res) {
