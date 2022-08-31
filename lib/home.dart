@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-import '/colors.dart';
 import '/models/home_data.dart';
 import '/utils/internet_access.dart';
 import '/utils/show_progress.dart';
-import '/utils/show_dialog.dart';
-import '/utils/delete_confirmation.dart';
 import '/utils/check_platform.dart';
 import '/utils/show_internet_status.dart';
 import '/models/user_data.dart';
 import '/get_to_user_profile.dart';
-import '/utils/custom_services.dart';
 import '/UserDashBoard/user_dashboard.dart';
 import 'package:flutter/services.dart';
+import '/UserDashBoard/mydrawer.dart';
 
 class HomeScreen extends StatefulWidget {
   final User user;
@@ -25,11 +21,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  bool _isLoading = true;
+  bool _isLoading = false;
   bool internetAccess = false;
   CheckPlatform _checkPlatform;
   ShowInternetStatus _showInternetStatus;
   GoToUserProfile _goToUserProfile;
+  MyDrawer _myDrawer;
 
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   var homeRefreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
@@ -63,6 +60,7 @@ class HomeScreenState extends State<HomeScreen> {
     ]);
     _checkPlatform = new CheckPlatform(context: context);
     _showInternetStatus = new ShowInternetStatus();
+    checkInternet();
     super.initState();
   }
 
@@ -74,6 +72,10 @@ class HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  checkInternet() async {
+    await getInternetAccessObject();
+  }
+
   @override
   Widget build(BuildContext context) {
     _goToUserProfile = new GoToUserProfile(
@@ -81,13 +83,15 @@ class HomeScreenState extends State<HomeScreen> {
         isIOS: _checkPlatform.isIOS(),
         user: user,
         callbackThis: this.callbackThis);
+    _myDrawer = new MyDrawer();
 
     return WillPopScope(
       onWillPop: () => new Future<bool>.value(false),
       child: new Scaffold(
         key: scaffoldKey,
+        drawer: _myDrawer,
         appBar: new AppBar(
-          leading: Container(),
+          centerTitle: true,
           title: new Text(
             "Home Automation",
             style: TextStyle(

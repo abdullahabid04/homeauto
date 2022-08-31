@@ -64,10 +64,10 @@ class RequestUser {
   static final appLinkURL = baseURL + "/applink";
 
   Future<User> getUserDetails(String user) async {
-    return _netUtil.post(getUserURL, body: {"email": user, "action": "1"}).then(
-        (dynamic res) {
+    return _netUtil.post(getUserURL,
+        body: {"user_id": user, "action": "1"}).then((dynamic res) {
       print(res.toString());
-      if (res["error"]) throw new FormException(res["errorMessage"]);
+      if (res["status"] == 0) throw new FormException(res["message"]);
       return User.map(res['user']);
     });
   }
@@ -75,15 +75,14 @@ class RequestUser {
   Future<User> updateUser(String email, String name, String address,
       String city, String mobile) async {
     return _netUtil.post(updateUserURL, body: {
-      "email": email,
-      "name": name,
-      "address": address,
+      "user_id": email,
+      "user_name": name,
+      "mobile_no": mobile,
       "city": city,
-      "mobile": mobile,
-      "action": "2"
+      "adddress": address
     }).then((dynamic res) {
       print(res.toString());
-      if (res["error"]) throw new FormException(res["errorMessage"]);
+      if (res["status"] == 0) throw new FormException(res["message"]);
       return User.map(res['user']);
     });
   }
@@ -91,13 +90,12 @@ class RequestUser {
   Future<User> changePassword(
       String email, String oldPassword, String newPassword) async {
     return _netUtil.post(changePasswordURL, body: {
-      "email": email,
-      "oldPassword": oldPassword,
-      "newPassword": newPassword,
-      "action": "3"
+      "user_id": email,
+      "old_password": oldPassword,
+      "new_password": newPassword
     }).then((dynamic res) {
       print(res.toString());
-      if (res["error"]) throw new FormException(res['errorMessage']);
+      if (res["status"] == 0) throw new FormException(res["message"]);
       return User.map(res['user']);
     });
   }
@@ -105,16 +103,13 @@ class RequestUser {
   Future<String> getAppLink(bool isIOS) async {
     String os;
     if (isIOS) {
-      os = "true";
+      os = "ios";
     } else {
-      os = "false";
+      os = "android";
     }
-    return _netUtil.post(appLinkURL, body: {
-      "action": "4",
-      "isIOS": os,
-    }).then((dynamic res) {
+    return _netUtil.post(appLinkURL, body: {"os": os}).then((dynamic res) {
       print(res.toString());
-      if (res["error"]) throw new FormException(res['errorMessage']);
+      if (res["status"] == 0) throw new FormException(res["message"]);
       return res['link'];
     });
   }
