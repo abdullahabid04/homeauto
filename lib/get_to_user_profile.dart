@@ -9,34 +9,19 @@ class GoToUserProfile {
   final BuildContext context;
   GoToUserProfile({this.context, this.isIOS, this.user, this.callbackThis});
   Widget showUser() {
-    return this.isIOS
-        ? FlatButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ShowUser(
-                    user: this.user,
-                    callbackUser: this.callbackThis,
-                  ),
-                ),
-              );
-            },
-            child: Text("Profile"),
-          )
-        : IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ShowUser(
-                    user: this.user,
-                    callbackUser: this.callbackThis,
-                  ),
-                ),
-              );
-            },
-            icon: Icon(Icons.person),
-          );
+    return IconButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ShowUser(
+              user: this.user,
+              callbackUser: this.callbackThis,
+            ),
+          ),
+        );
+      },
+      icon: Icon(Icons.person),
+    );
   }
 }

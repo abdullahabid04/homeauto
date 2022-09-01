@@ -287,35 +287,18 @@ class ChangePasswordState extends State<ChangePassword>
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar: _checkPlatform.isIOS()
-          ? CupertinoNavigationBar(
-              backgroundColor: kHAutoBlue100,
-              middle: new Text("Change Password"),
-            )
-          : new AppBar(
-              title: new Text("Change Password"),
-            ),
+      appBar: new AppBar(
+        title: new Text("Change Password"),
+      ),
       body: internetAccess
           ? _isLoading
               ? ShowProgress()
               : _showBody(context)
-          : _checkPlatform.isIOS()
-              ? new CustomScrollView(
-                  slivers: <Widget>[
-                    new CupertinoSliverRefreshControl(
-                      onRefresh: getInternetAccessObject,
-                    ),
-                    new SliverSafeArea(
-                        top: false,
-                        sliver: _showInternetStatus
-                            .showInternetStatus(_checkPlatform.isIOS())),
-                  ],
-                )
-              : RefreshIndicator(
-                  child: _showInternetStatus
-                      .showInternetStatus(_checkPlatform.isIOS()),
-                  onRefresh: getInternetAccessObject,
-                ),
+          : RefreshIndicator(
+              child: _showInternetStatus
+                  .showInternetStatus(_checkPlatform.isIOS()),
+              onRefresh: getInternetAccessObject,
+            ),
     );
   }
 }

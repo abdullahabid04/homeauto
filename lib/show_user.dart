@@ -206,14 +206,9 @@ class ShowUserState extends State<ShowUser> implements UserUpdateContract {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _checkPlatform.isIOS()
-          ? CupertinoNavigationBar(
-              backgroundColor: kHAutoBlue100,
-              middle: new Text("Home Automation"),
-            )
-          : new AppBar(
-              title: new Text("Home Automation"),
-            ),
+      appBar: new AppBar(
+        title: new Text("Home Automation"),
+      ),
       body: _isLoading ? ShowProgress() : _showBody(context),
     );
   }

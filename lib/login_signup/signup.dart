@@ -394,14 +394,9 @@ class SignupScreenState extends State<SignupScreen>
 
     return Scaffold(
       key: scaffoldKey,
-      appBar: _checkPlatform.isIOS()
-          ? CupertinoNavigationBar(
-              backgroundColor: kHAutoBlue100,
-              middle: new Text("Sign Up"),
-            )
-          : AppBar(
-              title: Text("Sign Up"),
-            ),
+      appBar: AppBar(
+        title: Text("Sign Up"),
+      ),
       body: _isLoading ? ShowProgress() : _showRegisterForm,
     );
   }

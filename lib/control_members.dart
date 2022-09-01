@@ -406,40 +406,17 @@ class _ControlMemberState extends State<ControlMember>
       body: _isLoading
           ? ShowProgress()
           : internetAccess
-              ? _checkPlatform.isIOS()
-                  ? new CustomScrollView(
-                      slivers: <Widget>[
-                        new CupertinoSliverRefreshControl(
-                            onRefresh: getMemberList),
-                        new SliverSafeArea(
-                          top: false,
-                          sliver:
-                              createListViewIOS(context, memberList, hwList),
-                        ),
-                      ],
-                    )
-                  : RefreshIndicator(
-                      key: subscriptionRefreshIndicatorKey,
-                      child: createListView(context, memberList, hwList),
-                      onRefresh: getMemberList,
-                    )
-              : _checkPlatform.isIOS()
-                  ? new CustomScrollView(
-                      slivers: <Widget>[
-                        new CupertinoSliverRefreshControl(
-                            onRefresh: getMemberList),
-                        new SliverSafeArea(
-                            top: false,
-                            sliver: _showInternetStatus
-                                .showInternetStatus(_checkPlatform.isIOS())),
-                      ],
-                    )
-                  : RefreshIndicator(
-                      key: subscriptionRefreshIndicatorKey,
-                      child: _showInternetStatus
-                          .showInternetStatus(_checkPlatform.isIOS()),
-                      onRefresh: getMemberList,
-                    ),
+              ? RefreshIndicator(
+                  key: subscriptionRefreshIndicatorKey,
+                  child: createListView(context, memberList, hwList),
+                  onRefresh: getMemberList,
+                )
+              : RefreshIndicator(
+                  key: subscriptionRefreshIndicatorKey,
+                  child: _showInternetStatus
+                      .showInternetStatus(_checkPlatform.isIOS()),
+                  onRefresh: getMemberList,
+                ),
     );
   }
 }

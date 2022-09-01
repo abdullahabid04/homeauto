@@ -410,35 +410,18 @@ class UserProfileState extends State<UserProfile>
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar: _checkPlatform.isIOS()
-          ? CupertinoNavigationBar(
-              backgroundColor: kHAutoBlue100,
-              middle: new Text("Edit Profile"),
-            )
-          : new AppBar(
-              title: new Text("Edit Profile"),
-            ),
+      appBar: new AppBar(
+        title: new Text("Edit Profile"),
+      ),
       body: internetAccess
           ? _isLoading
               ? ShowProgress()
               : _showBody(context)
-          : _checkPlatform.isIOS()
-              ? new CustomScrollView(
-                  slivers: <Widget>[
-                    new CupertinoSliverRefreshControl(
-                      onRefresh: getInternetAccessObject,
-                    ),
-                    new SliverSafeArea(
-                        top: false,
-                        sliver: _showInternetStatus
-                            .showInternetStatus(_checkPlatform.isIOS())),
-                  ],
-                )
-              : RefreshIndicator(
-                  child: _showInternetStatus
-                      .showInternetStatus(_checkPlatform.isIOS()),
-                  onRefresh: getInternetAccessObject,
-                ),
+          : RefreshIndicator(
+              child: _showInternetStatus
+                  .showInternetStatus(_checkPlatform.isIOS()),
+              onRefresh: getInternetAccessObject,
+            ),
     );
   }
 }

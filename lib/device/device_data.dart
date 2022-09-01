@@ -1,57 +1,80 @@
 import '/utils/network_util.dart';
 import '/utils/custom_exception.dart';
 
-class User {
-  int _id;
-  String _email,
-      _password,
-      _name,
-      _city,
-      _address,
-      _mobile,
-      _userid,
-      _datecreated;
-  User(this._id, this._email, this._password, this._name, this._city,
-      this._mobile, this._address, this._userid, this._datecreated);
+class DeviceData {
+  int status;
+  String message;
+  int total;
+  List<Devices> devices;
 
-  User.map(dynamic obj) {
-    this._id = int.parse(obj['id'].toString());
-    this._userid = obj["user_id"];
-    this._name = obj["user_name"];
-    this._email = obj["e_mail"];
-    this._mobile = obj["mobile_no"];
-    this._password = obj["password"];
-    this._city = obj["city"];
-    this._address = obj["address"];
-    this._datecreated = obj['date_created'];
-  }
-  int get id => _id;
-  String get userid => _userid;
-  String get name => _name;
-  String get email => _email;
-  String get mobile => _mobile;
-  String get password => _password;
-  String get city => _city;
-  String get address => _address;
-  String get datecreated => _datecreated;
+  DeviceData({this.status, this.message, this.total, this.devices});
 
-  Map<String, dynamic> toMap() {
-    var map = new Map<String, dynamic>();
-    map['id'] = _id;
-    map['user_id'] = _userid;
-    map["user_name"] = _name;
-    map["e_mail"] = _email;
-    map["mobile_no"] = _mobile;
-    map["password"] = _password;
-    map["city"] = _city;
-    map["address"] = _address;
-    map['date_created'] = _datecreated;
-    return map;
+  DeviceData.fromJson(Map<String, dynamic> json) {
+    status = json['status'];
+    message = json['message'];
+    total = json['total'];
+    if (json['devices'] != null) {
+      devices = <Devices>[];
+      json['devices'].forEach((v) {
+        devices.add(new Devices.fromJson(v));
+      });
+    }
   }
 
-  @override
-  String toString() {
-    return "User $name";
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['status'] = this.status;
+    data['message'] = this.message;
+    data['total'] = this.total;
+    if (this.devices != null) {
+      data['devices'] = this.devices.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Devices {
+  String id;
+  String userId;
+  String homeId;
+  String roomId;
+  String deviceId;
+  String deviceName;
+  String deviceType;
+  String dateCreated;
+
+  Devices(
+      {this.id,
+      this.userId,
+      this.homeId,
+      this.roomId,
+      this.deviceId,
+      this.deviceName,
+      this.deviceType,
+      this.dateCreated});
+
+  Devices.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    userId = json['user_id'];
+    homeId = json['home_id'];
+    roomId = json['room_id'];
+    deviceId = json['device_id'];
+    deviceName = json['device_name'];
+    deviceType = json['device_type'];
+    dateCreated = json['date_created'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['user_id'] = this.userId;
+    data['home_id'] = this.homeId;
+    data['room_id'] = this.roomId;
+    data['device_id'] = this.deviceId;
+    data['device_name'] = this.deviceName;
+    data['device_type'] = this.deviceType;
+    data['date_created'] = this.dateCreated;
+    return data;
   }
 }
 
@@ -63,16 +86,16 @@ class RequestUser {
   static final changePasswordURL = baseURL + "/changepass";
   static final appLinkURL = baseURL + "/applink";
 
-  Future<User> getUserDetails(String user) async {
+  Future<DeviceData> getUserDetails(String user) async {
     return _netUtil
         .post(getUserURL, body: {"user_id": user}).then((dynamic res) {
       print(res.toString());
       if (res["status"] == 0) throw new FormException(res["message"]);
-      return User.map(res['user']);
+      return DeviceData.fromJson(res);
     });
   }
 
-  Future<User> updateUser(String email, String name, String address,
+  Future<DeviceData> updateUser(String email, String name, String address,
       String city, String mobile) async {
     return _netUtil.post(updateUserURL, body: {
       "user_id": email,
@@ -83,11 +106,11 @@ class RequestUser {
     }).then((dynamic res) {
       print(res.toString());
       if (res["status"] == 0) throw new FormException(res["message"]);
-      return User.map(res['user']);
+      return DeviceData.fromJson(res);
     });
   }
 
-  Future<User> changePassword(
+  Future<DeviceData> changePassword(
       String email, String oldPassword, String newPassword) async {
     return _netUtil.post(changePasswordURL, body: {
       "user_id": email,
@@ -96,7 +119,7 @@ class RequestUser {
     }).then((dynamic res) {
       print(res.toString());
       if (res["status"] == 0) throw new FormException(res["message"]);
-      return User.map(res['user']);
+      return DeviceData.fromJson(res);
     });
   }
 
@@ -116,7 +139,7 @@ class RequestUser {
 }
 
 abstract class UserContract {
-  void onUserSuccess(User userDetails);
+  void onUserSuccess(DeviceData userDetails);
   void onUserError();
 }
 
@@ -141,7 +164,7 @@ class UserPresenter {
 }
 
 abstract class UserUpdateContract {
-  void onUserUpdateSuccess(User userDetails);
+  void onUserUpdateSuccess(DeviceData userDetails);
   void onUserUpdateError(String errorString);
 }
 
@@ -153,7 +176,8 @@ class UserUpdatePresenter {
   doUpdateUser(String email, String name, String address, String city,
       String mobile) async {
     try {
-      User user = await api.updateUser(email, name, address, city, mobile);
+      DeviceData user =
+          await api.updateUser(email, name, address, city, mobile);
       if (user == null) {
         _view.onUserUpdateError("Update Failed");
       } else {
@@ -166,7 +190,8 @@ class UserUpdatePresenter {
 
   doChangePassword(String email, String oldPassword, String newPassword) async {
     try {
-      User user = await api.changePassword(email, oldPassword, newPassword);
+      DeviceData user =
+          await api.changePassword(email, oldPassword, newPassword);
       if (user == null) {
         _view.onUserUpdateError("Update Failed");
       } else {

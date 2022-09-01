@@ -230,14 +230,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
 
     return Scaffold(
       key: scaffoldKey,
-      appBar: _checkPlatform.isIOS()
-          ? CupertinoNavigationBar(
-              backgroundColor: kHAutoBlue100,
-              middle: new Text("Subscription"),
-            )
-          : AppBar(
-              title: Text("Subscription"),
-            ),
+      appBar: AppBar(
+        title: Text("Subscription"),
+      ),
       body: _isLoading
           ? ShowProgress()
           : internetAccess
