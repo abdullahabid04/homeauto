@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '/models/user_data.dart';
-import '/device/device_data.dart';
-import '/device/device.dart';
+import '/screens/device/device_data.dart';
+import '/screens/device/device.dart';
 
 class DashBoard extends StatefulWidget {
   final deviceList;

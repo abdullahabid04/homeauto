@@ -1,34 +1,61 @@
 import '/utils/network_util.dart';
 import '/utils/custom_exception.dart';
+import '/utils/api_response.dart';
+
+class HomeData {
+  int status;
+  String message;
+  int total;
+  List<Home> home;
+
+  HomeData({this.status, this.message, this.total, this.home});
+
+  HomeData.fromJson(Map<String, dynamic> json) {
+    status = json['status'];
+    message = json['message'];
+    total = json['total'];
+    if (json['home'] != null) {
+      home = <Home>[];
+      json['home'].forEach((v) {
+        home.add(new Home.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['status'] = this.status;
+    data['message'] = this.message;
+    data['total'] = this.total;
+    if (this.home != null) {
+      data['home'] = this.home.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
 
 class Home {
-  String _homeName, _userID, _homeID;
-  int _id;
-  Home(this._homeName, this._userID, this._id, this._homeID);
-  Home.map(dynamic obj) {
-    var id = obj['id'].toString();
-    this._id = int.parse(id);
-    this._userID = obj["email"];
-    this._homeID = obj["home_id"];
-    this._homeName = obj["home_name"];
-  }
-  int get id => _id;
-  String get userID => _userID;
-  String get homeID => _homeID;
-  String get homeName => _homeName;
+  String id;
+  String userId;
+  String homeId;
+  String homeName;
 
-  Map<String, dynamic> toMap() {
-    var map = new Map<String, dynamic>();
-    map['id'] = _id;
-    map["user_id"] = _userID;
-    map["home_id"] = _homeID;
-    map["home_name"] = _homeName;
-    return map;
+  Home({this.id, this.userId, this.homeId, this.homeName});
+
+  Home.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    userId = json['user_id'];
+    homeId = json['home_id'];
+    homeName = json['home_name'];
   }
 
-  @override
-  String toString() {
-    return homeName;
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['user_id'] = this.userId;
+    data['home_id'] = this.homeId;
+    data['home_name'] = this.homeName;
+    return data;
   }
 }
 
@@ -40,62 +67,52 @@ class SendHomeData {
   static final updateURL = baseURL + "/name";
   static final deleteURL = baseURL + "/remove";
 
-  Future<List<Home>> getAllHome() async {
+  Future<HomeData> getAllHome(String user_id) async {
     return _netUtil
-        .post(readURL, body: {"user_id": "user"}).then((dynamic res) {
+        .post(readURL, body: {"user_id": user_id}).then((dynamic res) {
       print(res.toString());
       if (res["status"] == 0) throw new FormException(res["message"]);
-      int total = int.parse(res['total'].toString());
-      List<Home> homeList = new List<Home>();
-      for (int i = 0; i < total; i++) {
-        homeList.add(Home.map(res['home'][i]));
-      }
-      return homeList;
+      return HomeData.fromJson(res);
     });
   }
 
-  Future<Home> create(String homeName) async {
-    // final user = await db.getUser();
+  Future<ResponseDataAPI> create(String user_id, String home_name) async {
     return _netUtil.post(createURL,
-        body: {"user_id": "user", "home_name": homeName}).then((dynamic res) {
+        body: {"user_id": user_id, "home_name": home_name}).then((dynamic res) {
       print(res.toString());
       if (res["status"] == 0) throw new FormException(res["message"]);
-      return new Home.map(res['home']);
+      return ResponseDataAPI.fromJson(res);
     });
   }
 
-  Future<Home> delete(Home home) async {
-    final user = home.userID;
-    final id = home.homeID;
+  Future<ResponseDataAPI> delete(String user_id, String home_id) async {
     return _netUtil.post(deleteURL,
-        body: {"user_id": user, "home_id": id}).then((dynamic res) {
+        body: {"user_id": user_id, "home_id": home_id}).then((dynamic res) {
       print(res.toString());
       if (res["status"] == 0) throw new FormException(res["message"]);
-      return home;
+      return ResponseDataAPI.fromJson(res);
     });
   }
 
-  Future<Home> rename(Home home, String homeName) async {
-    final user = home.userID;
-    final id = home.homeID;
+  Future<ResponseDataAPI> rename(
+      String user_id, String home_id, String home_name) async {
     return _netUtil.post(updateURL, body: {
-      "uer_id": user,
-      "home_id": id,
-      "home_name": homeName
+      "uer_id": user_id,
+      "home_id": user_id,
+      "home_name": home_name
     }).then((dynamic res) {
       print(res.toString());
       if (res["status"] == 0) throw new FormException(res["message"]);
-      home._homeName = homeName;
-      return home;
+      return ResponseDataAPI.fromJson(res);
     });
   }
 }
 
 abstract class HomeScreenContract {
-  void onSuccess(Home home);
-  void onSuccessDelete(Home home);
+  void onSuccess(ResponseDataAPI home);
+  void onSuccessDelete(ResponseDataAPI home);
+  void onSuccessRename(ResponseDataAPI home);
   void onError(String errorTxt);
-  void onSuccessRename(Home home);
 }
 
 class HomeScreenPresenter {
@@ -103,30 +120,50 @@ class HomeScreenPresenter {
   SendHomeData api = new SendHomeData();
   HomeScreenPresenter(this._view);
 
-  doCreateHome(String homeName) async {
+  doCreateHome(String user_id, String home_name) async {
     try {
-      var home = await api.create(homeName);
+      var home = await api.create(user_id, home_name);
       _view.onSuccess(home);
     } on Exception catch (error) {
       _view.onError(error.toString());
     }
   }
 
-  doDeleteHome(Home home) async {
+  doDeleteHome(String user_id, String home_id) async {
     try {
-      var h = await api.delete(home);
+      var h = await api.delete(user_id, home_id);
       _view.onSuccessDelete(h);
     } on Exception catch (error) {
       _view.onError(error.toString());
     }
   }
 
-  doRenameHome(Home home, String homeName) async {
+  doRenameHome(String user_id, String home_id, String home_name) async {
     try {
-      var h = await api.rename(home, homeName);
+      var h = await api.rename(user_id, home_id, home_name);
       _view.onSuccessRename(h);
     } on Exception catch (error) {
       _view.onError(error.toString());
+    }
+  }
+}
+
+abstract class GetHomeContract {
+  void onGetHomeSuccess(HomeData home);
+  void onGetHomeError(String errorText);
+}
+
+class GetHomePresenter {
+  GetHomeContract _view;
+  SendHomeData api = new SendHomeData();
+  GetHomePresenter(this._view);
+
+  doGetHome(String user_id) async {
+    try {
+      var home = await api.getAllHome(user_id);
+      _view.onGetHomeSuccess(home);
+    } on Exception catch (error) {
+      _view.onGetHomeError(error.toString());
     }
   }
 }

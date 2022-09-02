@@ -1,39 +1,65 @@
 import '/utils/network_util.dart';
 import '/models/home_data.dart';
 import '/utils/custom_exception.dart';
+import '/utils/api_response.dart';
+
+class RoomData {
+  int status;
+  String message;
+  int total;
+  List<Room> room;
+
+  RoomData({this.status, this.message, this.total, this.room});
+
+  RoomData.fromJson(Map<String, dynamic> json) {
+    status = json['status'];
+    message = json['message'];
+    total = json['total'];
+    if (json['room'] != null) {
+      room = <Room>[];
+      json['room'].forEach((v) {
+        room.add(new Room.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['status'] = this.status;
+    data['message'] = this.message;
+    data['total'] = this.total;
+    if (this.room != null) {
+      data['room'] = this.room.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
 
 class Room {
-  String _roomName, _userID, _homeID, _roomID;
-  int _id;
-  Room(this._roomName, this._userID, this._homeID, this._id, this._roomID);
-  Room.map(dynamic obj) {
-    var id = obj['id'].toString();
-    this._id = int.parse(id);
-    this._userID = obj["user_id"];
-    this._homeID = obj['home_id'];
-    this._roomID = obj['room_id'];
-    this._roomName = obj["room_name"];
+  String id;
+  String userId;
+  String homeId;
+  String roomId;
+  String roomName;
+
+  Room({this.id, this.userId, this.homeId, this.roomId, this.roomName});
+
+  Room.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    userId = json['user_id'];
+    homeId = json['home_id'];
+    roomId = json['room_id'];
+    roomName = json['room_name'];
   }
 
-  int get id => _id;
-  String get roomName => _roomName;
-  String get userID => _userID;
-  String get homeID => _homeID;
-  String get roomID => _roomID;
-
-  Map<String, dynamic> toMap() {
-    var map = new Map<String, dynamic>();
-    map['id'] = _id;
-    map["user_id"] = _userID;
-    map['home_id'] = _homeID;
-    map['room_id'] = _roomID;
-    map["room_name"] = _roomName;
-    return map;
-  }
-
-  @override
-  String toString() {
-    return roomName;
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['user_id'] = this.userId;
+    data['home_id'] = this.homeId;
+    data['room_id'] = this.roomId;
+    data['room_name'] = this.roomName;
+    return data;
   }
 }
 
@@ -45,68 +71,56 @@ class SendRoomData {
   static final updateURL = baseURL + "/name";
   static final deleteURL = baseURL + "/remove";
 
-  Future<List<Room>> getAllRoom(Home home) async {
-    final user = home.userID;
-    final homeID = home.homeID;
+  Future<RoomData> getAllRoom(String user_id, String home_id) async {
     return _netUtil.post(readURL,
-        body: {"user_id": user, "home_id": homeID}).then((dynamic res) {
+        body: {"user_id": user_id, "home_id": home_id}).then((dynamic res) {
       print(res.toString());
       if (res["status"] == 0) throw new FormException(res["message"]);
-      int total = int.parse(res['total'].toString());
-      List<Room> roomList = new List<Room>();
-      for (int i = 0; i < total; i++) {
-        roomList.add(Room.map(res['room'][i]));
-      }
-      return roomList;
+      return RoomData.fromJson(res);
     });
   }
 
-  Future<Room> create(String roomName, Home home) async {
-    final homeID = home.homeID;
-    final user = home.userID;
+  Future<ResponseDataAPI> create(
+      String user_id, String home_id, String room_name) async {
     return _netUtil.post(createURL, body: {
-      "user_id": user,
-      "home_id": homeID,
-      "room_name": roomName
+      "user_id": user_id,
+      "home_id": home_id,
+      "room_name": room_name
     }).then((dynamic res) {
       print(res.toString());
       if (res["status"] == 0) throw new FormException(res["message"]);
-      return new Room.map(res['room']);
+      return ResponseDataAPI.fromJson(res);
     });
   }
 
-  Future<Room> delete(Room room) async {
-    final user = room.userID;
-    final id = room.roomID;
-    return _netUtil
-        .post(deleteURL, body: {"user_id": user, "id": id}).then((dynamic res) {
+  Future<ResponseDataAPI> delete(String user_id, String room_id) async {
+    return _netUtil.post(deleteURL,
+        body: {"user_id": user_id, "room_id": room_id}).then((dynamic res) {
       print(res.toString());
       if (res["status"] == 0) throw new FormException(res["message"]);
-      return room;
+      return ResponseDataAPI.fromJson(res);
     });
   }
 
-  Future<Room> rename(Room room, String roomName) async {
-    final user = room.userID;
-    final id = room.roomID;
+  Future<ResponseDataAPI> rename(
+      String user_id, String room_id, String room_name) async {
     return _netUtil.post(updateURL, body: {
-      "user_id": user,
-      "room_id": id,
-      "room_name": roomName
+      "user_id": user_id,
+      "room_id": room_id,
+      "room_name": room_name
     }).then((dynamic res) {
       print(res.toString());
       if (res["status"] == 0) throw new FormException(res["message"]);
-      room._roomName = roomName;
-      return room;
+      return ResponseDataAPI.fromJson(res);
     });
   }
 }
 
 abstract class RoomScreenContract {
-  void onSuccess(Room room);
-  void onSuccessDelete(Room room);
+  void onSuccess(ResponseDataAPI room);
+  void onSuccessDelete(ResponseDataAPI room);
   void onError(String errorTxt);
-  void onSuccessRename(Room room);
+  void onSuccessRename(ResponseDataAPI room);
 }
 
 class RoomScreenPresenter {
@@ -114,30 +128,50 @@ class RoomScreenPresenter {
   SendRoomData api = new SendRoomData();
   RoomScreenPresenter(this._view);
 
-  doCreateRoom(String roomName, Home home) async {
+  doCreateRoom(String user_id, String home_id, String room_name) async {
     try {
-      var room = await api.create(roomName, home);
+      var room = await api.create(user_id, home_id, room_name);
       _view.onSuccess(room);
     } on Exception catch (error) {
       _view.onError(error.toString());
     }
   }
 
-  doDeleteRoom(Room room) async {
+  doDeleteRoom(String user_id, String room_id) async {
     try {
-      var r = await api.delete(room);
+      var r = await api.delete(user_id, room_id);
       _view.onSuccessDelete(r);
     } on Exception catch (error) {
       _view.onError(error.toString());
     }
   }
 
-  doRenameRoom(Room room, String roomName) async {
+  doRenameRoom(String user_id, String room_id, String room_name) async {
     try {
-      var r = await api.rename(room, roomName);
+      var r = await api.rename(user_id, room_id, room_name);
       _view.onSuccessRename(r);
     } on Exception catch (error) {
       _view.onError(error.toString());
+    }
+  }
+}
+
+abstract class GetRoomContract {
+  void onGetRoomSuccess(ResponseDataAPI room);
+  void onGetRoomError(String errorTxt);
+}
+
+class GetRoomPresenter {
+  GetRoomContract _view;
+  SendRoomData api = new SendRoomData();
+  GetRoomPresenter(this._view);
+
+  doGetRoom(String user_id, String home_id, String room_id) async {
+    try {
+      var room = await api.create(user_id, home_id, room_id);
+      _view.onGetRoomSuccess(room);
+    } on Exception catch (error) {
+      _view.onGetRoomError(error.toString());
     }
   }
 }

@@ -8,7 +8,7 @@ import '/get_to_user_profile.dart';
 import '/UserDashBoard/user_dashboard.dart';
 import 'package:flutter/services.dart';
 import '/UserDashBoard/mydrawer.dart';
-import '/device/device_data.dart';
+import '/screens/device/device_data.dart';
 
 class HomeScreen extends StatefulWidget {
   final User user;

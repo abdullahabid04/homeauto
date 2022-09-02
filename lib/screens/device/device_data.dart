@@ -1,6 +1,6 @@
 import '/utils/network_util.dart';
 import '/utils/custom_exception.dart';
-import '../utils/api_response.dart';
+import '/utils/api_response.dart';
 
 class DeviceData {
   int status;
