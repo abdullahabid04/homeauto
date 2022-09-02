@@ -1,48 +1,20 @@
 import 'package:flutter/material.dart';
 import '/colors.dart';
 
-class Device extends StatefulWidget {
-  const Device({Key key}) : super(key: key);
+class DeviceWidget extends StatefulWidget {
+  final device;
+  const DeviceWidget({Key key, this.device}) : super(key: key);
 
   @override
-  State<Device> createState() => _DeviceState();
+  State<DeviceWidget> createState() => _DeviceWidgetState();
 }
 
-class _DeviceState extends State<Device> {
+class _DeviceWidgetState extends State<DeviceWidget> {
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Container(
       child: InkWell(
-        onTap: () async {
-          // await getInternetAccessObject();
-          // if (internetAccess) {
-          //   setState(() {
-          //     _timerStatus = 0;
-          //   });
-          //   await Navigator.push(
-          //     context,
-          //     MaterialPageRoute(
-          //       builder: (context) => DeviceStatusScreen(
-          //           user: this.user,
-          //           room: widget.room,
-          //           device: dvList[index],
-          //           updateDeviceList: this.updateDeviceList),
-          //     ),
-          //   );
-          //   setState(() {
-          //     _isLoading = true;
-          //     _timerStatus = 1;
-          //   });
-          //   getDeviceList();
-          // } else {
-          //   this._showDialog.showDialogCustom(
-          //       context,
-          //       "Internet Connection Problem",
-          //       "Please check your internet connection",
-          //       fontSize: 17.0,
-          //       boxHeight: 58.0);
-          // }
-        },
+        onTap: () async {},
         splashColor: kHAutoBlue300,
         child: Container(
           padding:
@@ -56,7 +28,7 @@ class _DeviceState extends State<Device> {
                     title: Hero(
                       tag: "abc",
                       child: Text(
-                        "txt",
+                        "${widget.device.deviceName}",
                         textAlign: TextAlign.left,
                         style: Theme.of(context)
                             .textTheme
@@ -65,7 +37,7 @@ class _DeviceState extends State<Device> {
                       ),
                     ),
                     subtitle: Text(
-                      "txt",
+                      "${widget.device.deviceType}",
                       style: TextStyle(
                         fontSize: 13.0,
                       ),
@@ -83,68 +55,29 @@ class _DeviceState extends State<Device> {
                 SizedBox(
                   height: 40.0,
                 ),
-                Row(
-                  children: <Widget>[
-                    SizedBox(
-                      width: 40.0,
-                      child: FlatButton(
-                        onPressed: () async {
-                          // await getInternetAccessObject();
-                          // if (internetAccess) {
-                          //   Map dvDetails = new Map();
-                          //   dvDetails = dvList[index].toMap();
-                          //   dvDetails['isModifying'] = true;
-                          //   setState(() {
-                          //     _timerStatus = 0;
-                          //   });
-                          //   final result = await Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //       builder: (context) => GetDeviceDetails(
-                          //         hardware: widget.hardware,
-                          //         deviceList: dvList,
-                          //         dvDetails: dvDetails,
-                          //         imgList: dvImgList,
-                          //       ),
-                          //     ),
-                          //   );
-                          //   setState(() {
-                          //     _timerStatus = 1;
-                          //   });
-                          //   print(result.toString());
-                          //   if (result != null && !result['error']) {
-                          //     setState(() {
-                          //       _isLoading = true;
-                          //     });
-                          //     _renameDevice(dvList[index], result['dvName'],
-                          //         result['dvImg'], result['dvPort']);
-                          //   }
-                          // } else {
-                          //   this._showDialog.showDialogCustom(
-                          //       context,
-                          //       "Internet Connection Problem",
-                          //       "Please check your internet connection",
-                          //       fontSize: 17.0,
-                          //       boxHeight: 58.0);
-                          // }
-                        },
-                        child: Icon(Icons.edit),
+                Expanded(
+                  child: Row(
+                    children: <Widget>[
+                      SizedBox(
+                        width: 40.0,
+                        child: FlatButton(
+                          onPressed: () async {},
+                          child: Icon(Icons.edit),
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      width: 20.0,
-                    ),
-                    SizedBox(
-                      width: 40.0,
-                      child: FlatButton(
-                        onPressed: () async {
-                          // await _deleteDevice(dvList[index]);
-                        },
-                        child: Icon(Icons.delete),
+                      SizedBox(
+                        width: 20.0,
                       ),
-                    ),
-                  ],
-                ),
+                      SizedBox(
+                        width: 40.0,
+                        child: FlatButton(
+                          onPressed: () async {},
+                          child: Icon(Icons.delete),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
               ],
             ),
           ),

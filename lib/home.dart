@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '/models/home_data.dart';
 import '/utils/internet_access.dart';
 import '/utils/show_progress.dart';
 import '/utils/check_platform.dart';
@@ -9,6 +8,7 @@ import '/get_to_user_profile.dart';
 import '/UserDashBoard/user_dashboard.dart';
 import 'package:flutter/services.dart';
 import '/UserDashBoard/mydrawer.dart';
+import '/device/device_data.dart';
 
 class HomeScreen extends StatefulWidget {
   final User user;
@@ -20,12 +20,14 @@ class HomeScreen extends StatefulWidget {
   }
 }
 
-class HomeScreenState extends State<HomeScreen> {
-  bool _isLoading = false;
+class HomeScreenState extends State<HomeScreen> implements DeviceContract {
+  bool _isLoading = true;
   bool internetAccess = false;
   CheckPlatform _checkPlatform;
   ShowInternetStatus _showInternetStatus;
   GoToUserProfile _goToUserProfile;
+  DevicePresenter _presenter;
+  List<Devices> devices = new List<Devices>();
   MyDrawer _myDrawer;
 
   final scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -47,7 +49,6 @@ class HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  HomeScreenPresenter _presenter;
   HomeScreenState(User user, Function callbackUser) {
     this.user = user;
     this.callbackUser = callbackUser;
@@ -60,8 +61,15 @@ class HomeScreenState extends State<HomeScreen> {
     ]);
     _checkPlatform = new CheckPlatform(context: context);
     _showInternetStatus = new ShowInternetStatus();
+    _presenter = new DevicePresenter(this);
     checkInternet();
+    getDeviceList();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   Future getInternetAccessObject() async {
@@ -74,6 +82,11 @@ class HomeScreenState extends State<HomeScreen> {
 
   checkInternet() async {
     await getInternetAccessObject();
+  }
+
+  getDeviceList() async {
+    DeviceData _deviceData =
+        await _presenter.doGetDevices("12-abdullahnew-2244668800");
   }
 
   @override
@@ -107,7 +120,9 @@ class HomeScreenState extends State<HomeScreen> {
             : internetAccess
                 ? RefreshIndicator(
                     key: homeRefreshIndicatorKey,
-                    child: DashBoard(),
+                    child: DashBoard(
+                      deviceList: devices,
+                    ),
                     onRefresh: () {},
                   )
                 : RefreshIndicator(
@@ -118,5 +133,20 @@ class HomeScreenState extends State<HomeScreen> {
                   ),
       ),
     );
+  }
+
+  @override
+  void onDeviceError() {
+    // TODO: implement onDeviceError
+  }
+
+  @override
+  void onDeviceSuccess(DeviceData userDetails) {
+    setState(() {
+      devices = userDetails.devices;
+    });
+    setState(() {
+      _isLoading = false;
+    });
   }
 }

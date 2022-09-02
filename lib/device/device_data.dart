@@ -1,5 +1,6 @@
 import '/utils/network_util.dart';
 import '/utils/custom_exception.dart';
+import '../utils/api_response.dart';
 
 class DeviceData {
   int status;
@@ -78,127 +79,155 @@ class Devices {
   }
 }
 
-class RequestUser {
+class RequestDevice {
   NetworkUtil _netUtil = new NetworkUtil();
-  static final baseURL = 'http://care-engg.com/api/profile';
-  static final getUserURL = baseURL + "/get";
-  static final updateUserURL = baseURL + "/update";
-  static final changePasswordURL = baseURL + "/changepass";
-  static final appLinkURL = baseURL + "/applink";
+  static final baseURL = 'http://care-engg.com/api/device';
+  static final createDeviceURL = baseURL + "/add";
+  static final getDeviceURL = baseURL + "/get";
+  static final updateDeviceURL = baseURL + "/rename";
+  static final deleteURL = baseURL + "/remove";
 
-  Future<DeviceData> getUserDetails(String user) async {
+  Future<DeviceData> getDevices(String user) async {
     return _netUtil
-        .post(getUserURL, body: {"user_id": user}).then((dynamic res) {
+        .post(getDeviceURL, body: {"user_id": user}).then((dynamic res) {
       print(res.toString());
       if (res["status"] == 0) throw new FormException(res["message"]);
       return DeviceData.fromJson(res);
     });
   }
 
-  Future<DeviceData> updateUser(String email, String name, String address,
-      String city, String mobile) async {
-    return _netUtil.post(updateUserURL, body: {
-      "user_id": email,
-      "user_name": name,
-      "mobile_no": mobile,
-      "city": city,
-      "adddress": address
+  Future<ResponseDataAPI> updateDevices(
+      String user_id, String device_id, String device_name) async {
+    return _netUtil.post(updateDeviceURL, body: {
+      "user_id": user_id,
+      "device_id": device_id,
+      "device_name": device_name
     }).then((dynamic res) {
       print(res.toString());
       if (res["status"] == 0) throw new FormException(res["message"]);
-      return DeviceData.fromJson(res);
+      return ResponseDataAPI.fromJson(res);
     });
   }
 
-  Future<DeviceData> changePassword(
-      String email, String oldPassword, String newPassword) async {
-    return _netUtil.post(changePasswordURL, body: {
-      "user_id": email,
-      "old_password": oldPassword,
-      "new_password": newPassword
+  Future<ResponseDataAPI> deleteDevice(String user_id, String device_id) async {
+    return _netUtil.post(deleteURL,
+        body: {"user_id": user_id, "device_id": device_id}).then((dynamic res) {
+      print(res.toString());
+      if (res["status"] == 0) throw new FormException(res["message"]);
+      return ResponseDataAPI.fromJson(res);
+    });
+  }
+
+  Future<ResponseDataAPI> createDevice(
+      String user_id,
+      String home_id,
+      String room_id,
+      String device_id,
+      String device_name,
+      String device_type) async {
+    return _netUtil.post(createDeviceURL, body: {
+      "user_id": user_id,
+      "home_id": home_id,
+      "room_id": room_id,
+      "device_id": device_id,
+      "device_name": device_name,
+      "device_type": device_type
     }).then((dynamic res) {
       print(res.toString());
       if (res["status"] == 0) throw new FormException(res["message"]);
-      return DeviceData.fromJson(res);
-    });
-  }
-
-  Future<String> getAppLink(bool isIOS) async {
-    String os;
-    if (isIOS) {
-      os = "ios";
-    } else {
-      os = "android";
-    }
-    return _netUtil.post(appLinkURL, body: {"os": os}).then((dynamic res) {
-      print(res.toString());
-      if (res["status"] == 0) throw new FormException(res["message"]);
-      return res['link'];
+      return ResponseDataAPI.fromJson(res);
     });
   }
 }
 
-abstract class UserContract {
-  void onUserSuccess(DeviceData userDetails);
-  void onUserError();
+abstract class DeviceContract {
+  void onDeviceSuccess(DeviceData userDetails);
+  void onDeviceError();
 }
 
-class UserPresenter {
-  UserContract _view;
-  RequestUser api = new RequestUser();
-  UserPresenter(this._view);
+class DevicePresenter {
+  DeviceContract _view;
+  RequestDevice api = new RequestDevice();
+  DevicePresenter(this._view);
 
-  doGetUser(String userEmail) async {
+  doGetDevices(String user_id) async {
     try {
-      var user = await api.getUserDetails(userEmail);
-      if (user == null) {
-        _view.onUserError();
+      var devices = await api.getDevices(user_id);
+      if (devices == null) {
+        _view.onDeviceError();
       } else {
-        _view.onUserSuccess(user);
+        _view.onDeviceSuccess(devices);
       }
     } on Exception catch (error) {
       print(error.toString());
-      _view.onUserError();
+      _view.onDeviceError();
     }
   }
 }
 
-abstract class UserUpdateContract {
-  void onUserUpdateSuccess(DeviceData userDetails);
-  void onUserUpdateError(String errorString);
+abstract class DeviceUpdateContract {
+  void onDeviceUpdateSuccess(ResponseDataAPI response);
+  void onDeviceUpdateError(String errorString);
+  void onDeviceDeleteSuccess(ResponseDataAPI response);
+  void onDeviceDeleteError(String errorString);
 }
 
-class UserUpdatePresenter {
-  UserUpdateContract _view;
-  RequestUser api = new RequestUser();
-  UserUpdatePresenter(this._view);
+class DeviceUpdatePresenter {
+  DeviceUpdateContract _view;
+  RequestDevice api = new RequestDevice();
+  DeviceUpdatePresenter(this._view);
 
-  doUpdateUser(String email, String name, String address, String city,
-      String mobile) async {
+  doUpdateDevice(String user_id, String device_id, String device_name) async {
     try {
-      DeviceData user =
-          await api.updateUser(email, name, address, city, mobile);
+      ResponseDataAPI user =
+          await api.updateDevices(user_id, device_id, device_name);
       if (user == null) {
-        _view.onUserUpdateError("Update Failed");
+        _view.onDeviceUpdateError("Update Failed");
       } else {
-        _view.onUserUpdateSuccess(user);
+        _view.onDeviceUpdateSuccess(user);
       }
     } on Exception catch (error) {
-      _view.onUserUpdateError(error.toString());
+      _view.onDeviceUpdateError(error.toString());
     }
   }
 
-  doChangePassword(String email, String oldPassword, String newPassword) async {
+  deleteDevice(String user_id, String device_id) async {
     try {
-      DeviceData user =
-          await api.changePassword(email, oldPassword, newPassword);
+      ResponseDataAPI user = await api.deleteDevice(user_id, device_id);
       if (user == null) {
-        _view.onUserUpdateError("Update Failed");
+        _view.onDeviceDeleteError("Update Failed");
       } else {
-        _view.onUserUpdateSuccess(user);
+        _view.onDeviceDeleteSuccess(user);
       }
     } on Exception catch (error) {
-      _view.onUserUpdateError(error.toString());
+      _view.onDeviceDeleteError(error.toString());
+    }
+  }
+}
+
+abstract class CreateDeviceContract {
+  void onCreateDeviceSuccess(ResponseDataAPI userDetails);
+  void onCreateDeviceError();
+}
+
+class CreateDevicePresenter {
+  CreateDeviceContract _view;
+  RequestDevice api = new RequestDevice();
+  CreateDevicePresenter(this._view);
+
+  doCreateDevice(String user_id, String home_id, String room_id,
+      String device_id, String device_name, String device_type) async {
+    try {
+      ResponseDataAPI user = await api.createDevice(
+          user_id, home_id, room_id, device_id, device_name, device_type);
+      if (user == null) {
+        _view.onCreateDeviceError();
+      } else {
+        _view.onCreateDeviceSuccess(user);
+      }
+    } on Exception catch (error) {
+      print(error.toString());
+      _view.onCreateDeviceError();
     }
   }
 }
