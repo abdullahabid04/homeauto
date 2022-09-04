@@ -5,10 +5,10 @@ import '/utils/check_platform.dart';
 import '/utils/show_internet_status.dart';
 import '/models/user_data.dart';
 import '/get_to_user_profile.dart';
-import '/UserDashBoard/user_dashboard.dart';
+import 'screens/device/device_screen.dart';
 import 'package:flutter/services.dart';
 import '/UserDashBoard/mydrawer.dart';
-import '/screens/device/device_data.dart';
+import 'models/device_data.dart';
 
 class HomeScreen extends StatefulWidget {
   final User user;
@@ -120,17 +120,16 @@ class HomeScreenState extends State<HomeScreen> implements DeviceContract {
             : internetAccess
                 ? RefreshIndicator(
                     key: homeRefreshIndicatorKey,
-                    child: DashBoard(
+                    child: UserDevices(
                       deviceList: devices,
                     ),
-                    onRefresh: () {},
+                    onRefresh: () => getDeviceList(),
                   )
                 : RefreshIndicator(
                     key: homeRefreshIndicatorKey,
                     child: _showInternetStatus
                         .showInternetStatus(_checkPlatform.isIOS()),
-                    onRefresh: () {},
-                  ),
+                    onRefresh: () => checkInternet()),
       ),
     );
   }
@@ -145,6 +144,7 @@ class HomeScreenState extends State<HomeScreen> implements DeviceContract {
     setState(() {
       devices = userDetails.devices;
     });
+    Future.delayed(const Duration(seconds: 1));
     setState(() {
       _isLoading = false;
     });

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'sidebar_routes/goto_myhomes.dart';
+import 'sidebar_routes/goto_myrooms.dart';
+import 'sidebar_routes/goto_mydevices.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({Key key}) : super(key: key);
@@ -31,16 +34,25 @@ class MyDrawer extends StatelessWidget {
             ),
             ListTile(
                 leading: const Icon(Icons.qr_code_scanner),
-                title: const Text('Scan for quality'),
-                onTap: () {}),
+                title: const Text('My Homes'),
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: ((context) => MyHomes())));
+                }),
             ListTile(
                 leading: const Icon(Icons.devices),
-                title: const Text('My Devices'),
-                onTap: () {}),
+                title: const Text('My Rooms'),
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: ((context) => MyRooms())));
+                }),
             ListTile(
                 leading: const Icon(Icons.miscellaneous_services),
-                title: const Text('Service History'),
-                onTap: () {}),
+                title: const Text('My Devices'),
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: ((context) => MyDevices())));
+                }),
             ListTile(
                 leading: const Icon(Icons.money),
                 title: const Text('Billing'),

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import '/models/user_data.dart';
-import '/screens/device/device_data.dart';
-import '/screens/device/device.dart';
+import '../../models/device_data.dart';
+import 'device_widget.dart';
 
-class DashBoard extends StatefulWidget {
+class UserDevices extends StatefulWidget {
   final deviceList;
-  const DashBoard({Key key, this.deviceList}) : super(key: key);
+  const UserDevices({Key key, this.deviceList}) : super(key: key);
 
   @override
-  State<DashBoard> createState() => _DashBoardState();
+  State<UserDevices> createState() => _UserDevicesState();
 }
 
-class _DashBoardState extends State<DashBoard> {
+class _UserDevicesState extends State<UserDevices> {
   @override
   void initState() {
     super.initState();

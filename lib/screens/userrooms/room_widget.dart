@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import '/colors.dart';
 
-class DeviceWidget extends StatefulWidget {
-  final device;
-  const DeviceWidget({Key key, this.device}) : super(key: key);
+class RoomWidget extends StatefulWidget {
+  final room;
+  const RoomWidget({Key key, this.room}) : super(key: key);
 
   @override
-  State<DeviceWidget> createState() => _DeviceWidgetState();
+  State<RoomWidget> createState() => _RoomWidgetState();
 }
 
-class _DeviceWidgetState extends State<DeviceWidget> {
+class _RoomWidgetState extends State<RoomWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -26,9 +26,9 @@ class _DeviceWidgetState extends State<DeviceWidget> {
                 Expanded(
                   child: ListTile(
                     title: Hero(
-                      tag: "abc",
+                      tag: Object(),
                       child: Text(
-                        "${widget.device.deviceName}",
+                        "def",
                         textAlign: TextAlign.left,
                         style: Theme.of(context)
                             .textTheme
@@ -37,7 +37,7 @@ class _DeviceWidgetState extends State<DeviceWidget> {
                       ),
                     ),
                     subtitle: Text(
-                      "${widget.device.deviceType}",
+                      "ghi",
                       style: TextStyle(
                         fontSize: 13.0,
                       ),

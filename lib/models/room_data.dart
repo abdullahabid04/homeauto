@@ -157,7 +157,7 @@ class RoomScreenPresenter {
 }
 
 abstract class GetRoomContract {
-  void onGetRoomSuccess(ResponseDataAPI room);
+  void onGetRoomSuccess(RoomData room);
   void onGetRoomError(String errorTxt);
 }
 
@@ -166,9 +166,9 @@ class GetRoomPresenter {
   SendRoomData api = new SendRoomData();
   GetRoomPresenter(this._view);
 
-  doGetRoom(String user_id, String home_id, String room_id) async {
+  doGetRoom(String user_id, String home_id) async {
     try {
-      var room = await api.create(user_id, home_id, room_id);
+      var room = await api.getAllRoom(user_id, home_id);
       _view.onGetRoomSuccess(room);
     } on Exception catch (error) {
       _view.onGetRoomError(error.toString());
