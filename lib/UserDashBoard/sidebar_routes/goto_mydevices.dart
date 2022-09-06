@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import '/models/device_data.dart';
 
 class MyDevices extends StatefulWidget {
-  const MyDevices({Key key}) : super(key: key);
+  const MyDevices({Key? key}) : super(key: key);
 
   @override
   State<MyDevices> createState() => _MyDevicesState();
@@ -17,10 +17,10 @@ class MyDevices extends StatefulWidget {
 class _MyDevicesState extends State<MyDevices> implements DeviceContract {
   bool _isLoading = true;
   bool internetAccess = false;
-  CheckPlatform _checkPlatform;
-  ShowInternetStatus _showInternetStatus;
-  DevicePresenter _presenter;
-  List<Devices> devices = new List<Devices>();
+  late CheckPlatform _checkPlatform;
+  late ShowInternetStatus _showInternetStatus;
+  late DevicePresenter _presenter;
+  List<Devices> devices = <Devices>[];
 
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   final homeRefreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
@@ -89,7 +89,7 @@ class _MyDevicesState extends State<MyDevices> implements DeviceContract {
   @override
   void onDeviceSuccess(DeviceData userDetails) {
     setState(() {
-      devices = userDetails.devices;
+      devices = userDetails.devices!;
     });
     Future.delayed(Duration(seconds: 1));
     setState(() {

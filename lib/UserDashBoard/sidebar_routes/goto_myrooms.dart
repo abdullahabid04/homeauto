@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 import '/models/room_data.dart';
 
 class MyRooms extends StatefulWidget {
-  const MyRooms({Key key}) : super(key: key);
+  const MyRooms({Key? key}) : super(key: key);
 
   @override
   State<MyRooms> createState() => _MyRoomsState();
@@ -19,10 +19,10 @@ class MyRooms extends StatefulWidget {
 class _MyRoomsState extends State<MyRooms> implements GetRoomContract {
   bool _isLoading = true;
   bool internetAccess = false;
-  CheckPlatform _checkPlatform;
-  ShowInternetStatus _showInternetStatus;
-  GetRoomPresenter _presenter;
-  List<Room> rooms = new List<Room>();
+  late CheckPlatform _checkPlatform;
+  late ShowInternetStatus _showInternetStatus;
+  late GetRoomPresenter _presenter;
+  List<Room> rooms = <Room>[];
 
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   final homeRefreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
@@ -91,7 +91,7 @@ class _MyRoomsState extends State<MyRooms> implements GetRoomContract {
   @override
   void onGetRoomSuccess(RoomData room) {
     setState(() {
-      rooms = room.room;
+      rooms = room.room!;
     });
     Future.delayed(Duration(seconds: 1));
     setState(() {

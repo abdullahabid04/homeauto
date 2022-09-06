@@ -8,7 +8,7 @@ class GetLogOut extends StatefulWidget {
 }
 
 class GetLogOutState extends State<GetLogOut> implements LogoutScreenContract {
-  LogoutScreenPresenter _presenter;
+  late LogoutScreenPresenter _presenter;
   GetLogOutState() {
     _presenter = new LogoutScreenPresenter(this);
   }

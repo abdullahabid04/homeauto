@@ -9,16 +9,16 @@ abstract class AuthStateListener {
 
 class AuthStateProvider implements UserContract {
   bool internetAccess = false;
-  UserPresenter _userPresenter;
-  User user;
+  UserPresenter? _userPresenter;
+  late User user;
   static final AuthStateProvider _instance = new AuthStateProvider.internal();
 
-  List<AuthStateListener> _subscribers;
+  List<AuthStateListener>? _subscribers;
 
   factory AuthStateProvider() => _instance;
   AuthStateProvider.internal() {
     _userPresenter = new UserPresenter(this);
-    _subscribers = new List<AuthStateListener>();
+    _subscribers = <AuthStateListener>[];
     getInternetAccessObject();
   }
   Future getInternetAccessObject() async {
@@ -28,38 +28,40 @@ class AuthStateProvider implements UserContract {
 
   void initState() async {
     bool isLoggedIn = true;
-    var user = "Boygood-0000000000";
+    var user_id = "Boygood-0000000000";
     if (isLoggedIn) {
       if (internetAccess) {
-        await _userPresenter.doGetUser(user);
+        await _userPresenter!.doGetUser(user_id);
         print("hello if");
       } else {
-        await _userPresenter.doGetUser(user);
+        await _userPresenter!.doGetUser(user_id);
         print("hello else");
       }
-    } else
-      notify(AuthState.LOGGED_OUT, null);
+    } else {
+      User user = new User(0, "", "", "", "", "", "", "", "");
+      notify(AuthState.LOGGED_OUT, user);
+    }
   }
 
   void subscribe(AuthStateListener listener) {
-    _subscribers.add(listener);
+    _subscribers!.add(listener);
   }
 
   void dispose(AuthStateListener listener) {
-    for (var l in _subscribers) {
-      if (l == listener) _subscribers.remove(l);
+    for (var l in _subscribers!) {
+      if (l == listener) _subscribers!.remove(l);
     }
   }
 
   void notify(AuthState state, User user) {
-    _subscribers
+    _subscribers!
         .forEach((AuthStateListener s) => s.onAuthStateChanged(state, user));
   }
 
   @override
   void onUserError() {
-    user = null;
-    notify(AuthState.LOGGED_OUT, null);
+    User user = new User(0, "", "", "", "", "", "", "", "");
+    notify(AuthState.LOGGED_OUT, user);
   }
 
   @override

@@ -6,7 +6,7 @@ import 'room_widget.dart';
 
 class UserRooms extends StatefulWidget {
   final roomList;
-  const UserRooms({Key key, this.roomList}) : super(key: key);
+  const UserRooms({Key? key, this.roomList}) : super(key: key);
 
   @override
   State<UserRooms> createState() => _UserRoomsState();

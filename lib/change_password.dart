@@ -10,12 +10,12 @@ import '/utils/check_platform.dart';
 import 'package:flutter/cupertino.dart';
 
 class ChangePassword extends StatefulWidget {
-  final User user;
-  final Function callbackUser;
+  final User? user;
+  final Function? callbackUser;
   ChangePassword({this.user, this.callbackUser});
   @override
   ChangePasswordState createState() {
-    return ChangePasswordState(user, callbackUser);
+    return ChangePasswordState(user!, callbackUser!);
   }
 }
 
@@ -24,26 +24,25 @@ class ChangePasswordState extends State<ChangePassword>
   bool _isLoading = false;
   bool _isLoadingValue = false;
   bool internetAccess = false;
-  CheckPlatform _checkPlatform;
+  late CheckPlatform _checkPlatform;
 
-  User user;
-  Function callbackUser;
-  ShowDialog showDialog;
-  ShowInternetStatus _showInternetStatus;
-
+  late User user;
+  late Function callbackUser;
+  late ShowDialog showDialog;
+  late ShowInternetStatus _showInternetStatus;
   bool _isError = false;
-  String _showError;
-  String _oldPassword, _newPassword, _newCPassword;
+  late String _showError;
+  late String _oldPassword, _newPassword, _newCPassword;
   FocusNode _oldPasswordFocus = new FocusNode();
   FocusNode _newPasswordFocus = new FocusNode();
   FocusNode _newCPasswordFocus = new FocusNode();
-  UserUpdatePresenter _userUpdatePresenter;
+  late UserUpdatePresenter _userUpdatePresenter;
 
   var scaffoldKey = new GlobalKey<ScaffoldState>();
   var formKey = new GlobalKey<FormState>();
   bool _autoValidate = false;
 
-  Function callbackThis(User userDetails) {
+  callbackThis(User userDetails) {
     this.callbackUser(userDetails);
     setState(() {
       this.user = userDetails;
@@ -103,7 +102,7 @@ class ChangePasswordState extends State<ChangePassword>
     await getInternetAccessObject();
     if (internetAccess) {
       var form = formKey.currentState;
-      if (form.validate()) {
+      if (form!.validate()) {
         form.save();
         if (_newPassword == _newCPassword) {
           this._isError = false;
@@ -127,17 +126,17 @@ class ChangePasswordState extends State<ChangePassword>
     }
   }
 
-  String passwordValidator(String value) {
+  String? passwordValidator(String? value) {
     Pattern pattern =
         r'^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})';
-    RegExp regex = new RegExp(pattern);
-    if (!regex.hasMatch(value))
+    RegExp regex = new RegExp(pattern.toString());
+    if (!regex.hasMatch(value!))
       return 'Enter valid password';
     else
       return null;
   }
 
-  String oldPasswordValidator(String value) {
+  String? oldPasswordValidator(String? value) {
     if (value == "" || value == null) {
       return "Please enter old password";
     }
@@ -151,7 +150,7 @@ class ChangePasswordState extends State<ChangePassword>
         elevation: 10.0,
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(color: kHAutoBlue300, width: 2.0),
+            border: Border.all(color: kHAutoBlue300!, width: 2.0),
           ),
           child: Container(
             padding: EdgeInsets.all(10.0),
@@ -174,7 +173,7 @@ class ChangePasswordState extends State<ChangePassword>
                       ),
                     ),
                     onSaved: (value) {
-                      _oldPassword = value;
+                      _oldPassword = value!;
                     },
                     obscureText: true,
                     validator: oldPasswordValidator,
@@ -199,7 +198,7 @@ class ChangePasswordState extends State<ChangePassword>
                       ),
                     ),
                     onSaved: (value) {
-                      _newPassword = value;
+                      _newPassword = value!;
                     },
                     validator: passwordValidator,
                     keyboardType: TextInputType.text,
@@ -224,7 +223,7 @@ class ChangePasswordState extends State<ChangePassword>
                       ),
                     ),
                     onSaved: (value) {
-                      _newCPassword = value;
+                      _newCPassword = value!;
                     },
                     validator: passwordValidator,
                     obscureText: true,

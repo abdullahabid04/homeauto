@@ -9,8 +9,8 @@ class ShowProgress extends StatelessWidget {
       child: Center(
           child: ColorLoader(
         color1: Colors.redAccent,
-        color2: Colors.blue[500],
-        color3: Colors.green[300],
+        color2: Colors.blue,
+        color3: Colors.green,
       )),
     );
   }

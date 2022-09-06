@@ -5,7 +5,7 @@ import 'device_widget.dart';
 
 class UserDevices extends StatefulWidget {
   final deviceList;
-  const UserDevices({Key key, this.deviceList}) : super(key: key);
+  const UserDevices({Key? key, this.deviceList}) : super(key: key);
 
   @override
   State<UserDevices> createState() => _UserDevicesState();

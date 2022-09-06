@@ -3,7 +3,7 @@ import '/colors.dart';
 
 class HomeWidget extends StatefulWidget {
   final home;
-  const HomeWidget({Key key, this.home}) : super(key: key);
+  const HomeWidget({Key? key, this.home}) : super(key: key);
 
   @override
   State<HomeWidget> createState() => _HomeWidgetState();
@@ -32,7 +32,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                         textAlign: TextAlign.left,
                         style: Theme.of(context)
                             .textTheme
-                            .headline1
+                            .headline1!
                             .copyWith(fontSize: 17.0),
                       ),
                     ),

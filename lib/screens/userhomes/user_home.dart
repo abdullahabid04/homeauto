@@ -7,7 +7,7 @@ import 'home_widget.dart';
 
 class UserHomes extends StatefulWidget {
   final homeList;
-  const UserHomes({Key key, this.homeList}) : super(key: key);
+  const UserHomes({Key? key, this.homeList}) : super(key: key);
 
   @override
   State<UserHomes> createState() => _UserHomesState();

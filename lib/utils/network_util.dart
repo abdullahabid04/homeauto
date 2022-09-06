@@ -11,7 +11,7 @@ class NetworkUtil {
   final JsonDecoder _decoder = new JsonDecoder();
 
   Future<dynamic> get(String url) {
-    return http.get(url).then((http.Response response) {
+    return http.get(Uri.parse(url)).then((http.Response response) {
       final String res = response.body;
       final int statusCode = response.statusCode;
 
@@ -22,10 +22,8 @@ class NetworkUtil {
     });
   }
 
-  Future<dynamic> post(String url, {Map headers, body, encoding}) {
-    return http
-        .post(url, body: body, headers: headers, encoding: encoding)
-        .then((http.Response response) {
+  Future<dynamic> post(String url, {body}) {
+    return http.post(Uri.parse(url), body: body).then((http.Response response) {
       final String res = response.body;
       final int statusCode = response.statusCode;
 

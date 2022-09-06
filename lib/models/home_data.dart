@@ -3,10 +3,10 @@ import '/utils/custom_exception.dart';
 import '/utils/api_response.dart';
 
 class HomeData {
-  int status;
-  String message;
-  int total;
-  List<Home> home;
+  int? status;
+  String? message;
+  int? total;
+  List<Home>? home;
 
   HomeData({this.status, this.message, this.total, this.home});
 
@@ -17,7 +17,7 @@ class HomeData {
     if (json['home'] != null) {
       home = <Home>[];
       json['home'].forEach((v) {
-        home.add(new Home.fromJson(v));
+        home!.add(new Home.fromJson(v));
       });
     }
   }
@@ -28,17 +28,17 @@ class HomeData {
     data['message'] = this.message;
     data['total'] = this.total;
     if (this.home != null) {
-      data['home'] = this.home.map((v) => v.toJson()).toList();
+      data['home'] = this.home!.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
 class Home {
-  String id;
-  String userId;
-  String homeId;
-  String homeName;
+  String? id;
+  String? userId;
+  String? homeId;
+  String? homeName;
 
   Home({this.id, this.userId, this.homeId, this.homeName});
 

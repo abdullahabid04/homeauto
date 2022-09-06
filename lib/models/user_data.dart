@@ -2,8 +2,8 @@ import '/utils/network_util.dart';
 import '/utils/custom_exception.dart';
 
 class User {
-  int _id;
-  String _email,
+  late int _id;
+  late String _email,
       _password,
       _name,
       _city,

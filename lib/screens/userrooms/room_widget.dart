@@ -3,7 +3,7 @@ import '/colors.dart';
 
 class RoomWidget extends StatefulWidget {
   final room;
-  const RoomWidget({Key key, this.room}) : super(key: key);
+  const RoomWidget({Key? key, this.room}) : super(key: key);
 
   @override
   State<RoomWidget> createState() => _RoomWidgetState();
@@ -32,7 +32,7 @@ class _RoomWidgetState extends State<RoomWidget> {
                         textAlign: TextAlign.left,
                         style: Theme.of(context)
                             .textTheme
-                            .headline1
+                            .headline1!
                             .copyWith(fontSize: 17.0),
                       ),
                     ),

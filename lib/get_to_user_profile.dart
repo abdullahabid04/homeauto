@@ -3,20 +3,20 @@ import '/show_user.dart';
 import '/models/user_data.dart';
 
 class GoToUserProfile {
-  final User user;
-  final Function callbackThis;
-  final bool isIOS;
-  final BuildContext context;
+  final User? user;
+  final Function? callbackThis;
+  final bool? isIOS;
+  final BuildContext? context;
   GoToUserProfile({this.context, this.isIOS, this.user, this.callbackThis});
   Widget showUser() {
     return IconButton(
       onPressed: () {
         Navigator.push(
-          context,
+          context!,
           MaterialPageRoute(
             builder: (context) => ShowUser(
-              user: this.user,
-              callbackUser: this.callbackThis,
+              user: this.user!,
+              callbackUser: this.callbackThis!,
             ),
           ),
         );

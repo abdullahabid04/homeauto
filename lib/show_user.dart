@@ -15,8 +15,8 @@ import 'package:share/share.dart';
 import '/utils/show_progress.dart';
 
 class ShowUser extends StatefulWidget {
-  final User user;
-  final Function callbackUser;
+  final User? user;
+  final Function? callbackUser;
   ShowUser({this.user, this.callbackUser});
   @override
   ShowUserState createState() {
@@ -27,19 +27,19 @@ class ShowUser extends StatefulWidget {
 class ShowUserState extends State<ShowUser> implements UserUpdateContract {
   bool _isLoading = false;
   bool internetAccess = false;
-  CheckPlatform _checkPlatform;
-  ShowDialog _showDialog;
+  late CheckPlatform _checkPlatform;
+  late ShowDialog _showDialog;
 
-  User user;
-  Function callbackUser;
-  String link;
+  late User user;
+  late Function callbackUser;
+  late String link;
 
-  UserUpdatePresenter _userUpdatePresenter;
+  late UserUpdatePresenter _userUpdatePresenter;
   ShowUserState(user, callbackUser) {
     this.user = user;
     this.callbackUser = callbackUser;
   }
-  Function callbackThis(User user) {
+  callbackThis(User user) {
     setState(() {
       this.user = user;
     });
@@ -179,11 +179,11 @@ class ShowUserState extends State<ShowUser> implements UserUpdateContract {
             onTap: () async {
               try {
                 await getAppLink();
-                final RenderBox box = context.findRenderObject();
-                Share.share(
-                    "To install Home Automation, Click on below link \n $link",
-                    sharePositionOrigin:
-                        box.localToGlobal(Offset.zero) & box.size);
+                // final RenderBox box = context.findRenderObject();
+                // Share.share(
+                //     "To install Home Automation, Click on below link \n $link",
+                //     sharePositionOrigin:
+                //         box.localToGlobal(Offset.zero) & box.size);
               } on Exception catch (error) {
                 onUserUpdateError(error.toString());
               }

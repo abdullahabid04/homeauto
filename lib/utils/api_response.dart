@@ -1,6 +1,6 @@
 class ResponseDataAPI {
-  int status;
-  String message;
+  int? status;
+  String? message;
 
   ResponseDataAPI({this.status, this.message});
 

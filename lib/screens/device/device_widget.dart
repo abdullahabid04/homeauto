@@ -3,7 +3,7 @@ import '/colors.dart';
 
 class DeviceWidget extends StatefulWidget {
   final device;
-  const DeviceWidget({Key key, this.device}) : super(key: key);
+  const DeviceWidget({Key? key, this.device}) : super(key: key);
 
   @override
   State<DeviceWidget> createState() => _DeviceWidgetState();
@@ -32,7 +32,7 @@ class _DeviceWidgetState extends State<DeviceWidget> {
                         textAlign: TextAlign.left,
                         style: Theme.of(context)
                             .textTheme
-                            .headline1
+                            .headline1!
                             .copyWith(fontSize: 17.0),
                       ),
                     ),

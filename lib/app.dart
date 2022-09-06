@@ -3,7 +3,7 @@ import '/home.dart';
 import '/colors.dart';
 import '/login_signup/login.dart';
 import '/login_signup/signup.dart';
-import 'package:splashscreen/splashscreen.dart';
+import '/screens/splashscreen/splash_screen.dart';
 
 class HomeAutomation extends StatefulWidget {
   HomeAutomationState createState() => HomeAutomationState();
@@ -37,21 +37,7 @@ class _HomeAutomationSplashScreenState
     extends State<HomeAutomationSplashScreen> {
   @override
   Widget build(BuildContext context) {
-    return new SplashScreen(
-      seconds: 3,
-      loadingText: Text("Please wait"),
-      navigateAfterSeconds: new LoginScreen(),
-      title: new Text(
-        'Home Automation',
-        style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 35.0),
-      ),
-      backgroundColor: Colors.white,
-      styleTextUnderTheLoader: new TextStyle(),
-      photoSize: 100.0,
-      image: Image.asset("assets/images/logo.png"),
-      onClick: () => print("Home Automation"),
-      loaderColor: Colors.white,
-    );
+    return new SplashScreen(title: "Home AutoMation");
   }
 }
 
@@ -81,15 +67,15 @@ ThemeData _buildAppTheme() {
 TextTheme _buildAppTextTheme(TextTheme base) {
   return base
       .copyWith(
-        headline1: base.headline1.copyWith(
+        headline1: base.headline1!.copyWith(
           fontWeight: FontWeight.w500,
         ),
-        subtitle1: base.headline6.copyWith(fontSize: 18.0),
-        caption: base.caption.copyWith(
+        subtitle1: base.headline6!.copyWith(fontSize: 18.0),
+        caption: base.caption!.copyWith(
           fontWeight: FontWeight.w400,
           fontSize: 14.0,
         ),
-        bodyText2: base.bodyText1.copyWith(
+        bodyText2: base.bodyText1!.copyWith(
           fontWeight: FontWeight.w500,
           fontSize: 16.0,
         ),

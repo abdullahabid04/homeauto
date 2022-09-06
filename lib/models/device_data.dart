@@ -3,10 +3,10 @@ import '/utils/custom_exception.dart';
 import '/utils/api_response.dart';
 
 class DeviceData {
-  int status;
-  String message;
-  int total;
-  List<Devices> devices;
+  int? status;
+  String? message;
+  int? total;
+  List<Devices>? devices;
 
   DeviceData({this.status, this.message, this.total, this.devices});
 
@@ -17,7 +17,7 @@ class DeviceData {
     if (json['devices'] != null) {
       devices = <Devices>[];
       json['devices'].forEach((v) {
-        devices.add(new Devices.fromJson(v));
+        devices!.add(new Devices.fromJson(v));
       });
     }
   }
@@ -28,21 +28,21 @@ class DeviceData {
     data['message'] = this.message;
     data['total'] = this.total;
     if (this.devices != null) {
-      data['devices'] = this.devices.map((v) => v.toJson()).toList();
+      data['devices'] = this.devices!.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
 class Devices {
-  String id;
-  String userId;
-  String homeId;
-  String roomId;
-  String deviceId;
-  String deviceName;
-  String deviceType;
-  String dateCreated;
+  String? id;
+  String? userId;
+  String? homeId;
+  String? roomId;
+  String? deviceId;
+  String? deviceName;
+  String? deviceType;
+  String? dateCreated;
 
   Devices(
       {this.id,

@@ -3,7 +3,7 @@ import '/utils/custom_exception.dart';
 import '/models/user_data.dart';
 
 class Subscription {
-  String _hwSeries, _leftTime, _state;
+  String? _hwSeries, _leftTime, _state;
   Subscription(this._leftTime, this._state);
   Subscription.map(dynamic obj) {
     this._hwSeries = obj['serialNo'];
@@ -14,20 +14,15 @@ class Subscription {
       this._state = "Expired";
     }
   }
-  String get hwSeries => _hwSeries;
-  String get leftTime => _leftTime;
-  String get state => _state;
-  Map<String, dynamic> toMap() {
+  String? get hwSeries => _hwSeries;
+  String? get leftTime => _leftTime;
+  String? get state => _state;
+  Map toMap() {
     Map obj = new Map();
     obj['serialNo'] = this._hwSeries;
     obj['leftTime'] = this._leftTime;
     obj['state'] = this._state;
     return obj;
-  }
-
-  @override
-  String toString() {
-    return hwSeries;
   }
 }
 
@@ -45,7 +40,7 @@ class RequestSubscription {
       print(res.toString());
       if (res["error"]) throw new FormException(res["errorMessage"]);
       int total = int.parse(res['user']['totalRows'].toString());
-      List<Subscription> subscriptionList = new List<Subscription>();
+      List<Subscription> subscriptionList = <Subscription>[];
       for (int i = 0; i < total; i++) {
         subscriptionList.add(Subscription.map(res['user']['row'][i]));
       }

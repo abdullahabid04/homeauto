@@ -4,50 +4,40 @@ import '/models/user_data.dart';
 import 'dart:convert';
 
 class Member {
-  String _email, _name;
-  String _hwName;
+  String? _email, _name;
+  String? _hwName;
   Member(this._email, this._name, this._hwName);
   Member.map(dynamic obj) {
     this._email = obj['email'];
     this._name = obj['name'];
     this._hwName = obj['hwName'];
   }
-  String get email => _email;
-  String get name => _name;
-  String get hwName => _hwName;
-  Map<String, dynamic> toMap() {
+  String? get email => _email;
+  String? get name => _name;
+  String? get hwName => _hwName;
+  Map toMap() {
     Map obj = new Map();
     obj['email'] = this._email;
     obj['name'] = this._name;
     obj['hwName'] = this._hwName;
     return obj;
   }
-
-  @override
-  String toString() {
-    return email;
-  }
 }
 
 class Hw {
-  String _hwName, _hwSeries;
+  String? _hwName, _hwSeries;
   Hw(this._hwName, this._hwSeries);
   Hw.map(dynamic obj) {
     this._hwName = obj['hwName'];
     this._hwSeries = obj['hwSeries'];
   }
-  String get hwName => _hwName;
-  String get hwSeries => _hwSeries;
-  Map<String, dynamic> toMap() {
+  String? get hwName => _hwName;
+  String? get hwSeries => _hwSeries;
+  Map toMap() {
     Map obj = new Map();
     obj['hwName'] = this._hwName;
     obj['hwSeries'] = this._hwSeries;
     return obj;
-  }
-
-  @override
-  String toString() {
-    return hwName;
   }
 }
 
@@ -65,7 +55,7 @@ class RequestMember {
       print(res.toString());
       if (res["error"]) throw new FormException(res["errorMessage"]);
       int total = int.parse(res['user']['memberRows'].toString());
-      List<Member> memberList = new List<Member>();
+      List<Member> memberList = <Member>[];
       for (int i = 0; i < total; i++) {
         memberList.add(Member.map(res['user']['memberList'][i]));
       }
@@ -88,7 +78,7 @@ class RequestMember {
   }
 
   Future<String> saveMember(User user, String memberEmail, String hwSeries) {
-    List memberModelList = new List();
+    List memberModelList = [];
     memberModelList.add(memberEmail);
     int userID = user.id;
     return _netUtil.post(finalURL, body: {
@@ -115,7 +105,7 @@ class RequestMember {
       print(res.toString());
       if (res["error"]) throw new FormException(res["errorMessage"]);
       int total = int.parse(res['user']['totalRows'].toString());
-      List<Hw> hwList = new List<Hw>();
+      List<Hw> hwList = <Hw>[];
       for (int i = 0; i < total; i++) {
         hwList.add(Hw.map(res['user']['hwList'][i]));
       }

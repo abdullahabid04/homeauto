@@ -11,35 +11,35 @@ import 'package:flutter/services.dart';
 import '/models/member_data.dart';
 
 class ControlMember extends StatefulWidget {
-  final User user;
+  final User? user;
   ControlMember({this.user});
   @override
-  _ControlMemberState createState() => _ControlMemberState(user);
+  _ControlMemberState createState() => _ControlMemberState(user!);
 }
 
 class _ControlMemberState extends State<ControlMember>
     implements MemberContract {
   bool _isLoading = true;
   bool internetAccess = false;
-  CheckPlatform _checkPlatform;
+  late CheckPlatform _checkPlatform;
 
-  User user;
-  ShowDialog showDialog;
-  ShowInternetStatus _showInternetStatus;
-  UserUpdatePresenter _userUpdatePresenter;
+  late User user;
+  late ShowDialog showDialog;
+  late ShowInternetStatus _showInternetStatus;
+  late UserUpdatePresenter _userUpdatePresenter;
 
   var scaffoldKey = new GlobalKey<ScaffoldState>();
   var formKey = new GlobalKey<FormState>();
   bool _autoValidate = false;
   var subscriptionRefreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
 
-  String _memberEmail;
-  String _hwSeries;
-  List<Hw> hwList = new List<Hw>();
+  late String _memberEmail;
+  late String _hwSeries;
+  List<Hw> hwList = <Hw>[];
   FocusNode _memberFocus = new FocusNode();
 
-  MemberPresenter _memberPresenter;
-  List<Member> memberList = new List<Member>();
+  late MemberPresenter _memberPresenter;
+  List<Member> memberList = <Member>[];
 
   _ControlMemberState(User user) {
     this.user = user;
@@ -81,7 +81,7 @@ class _ControlMemberState extends State<ControlMember>
       hwList = await _memberPresenter.api.getHardwareList(this.user);
       if (hwList.length > 0) {
         hwList.add(Hw("Permission for all hardwares", "-99"));
-        _hwSeries = hwList[0].hwSeries;
+        _hwSeries = hwList[0].hwSeries!;
       }
     }
     setState(() => _isLoading = false);
@@ -108,7 +108,7 @@ class _ControlMemberState extends State<ControlMember>
     return Card(
       elevation: 5.0,
       child: Dismissible(
-        key: Key(memberList[index].email),
+        key: Key(memberList[index].email!),
         onDismissed: (direction) {
           Member member = memberList[index];
           setState(() {
@@ -127,13 +127,13 @@ class _ControlMemberState extends State<ControlMember>
         ),
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(color: kHAutoBlue300, width: 2.0),
+            border: Border.all(color: kHAutoBlue300!, width: 2.0),
           ),
           child: Container(
             margin: EdgeInsets.all(10.0),
             child: ListTile(
               leading: Text(
-                "${memberList[index].name[0].toUpperCase()}",
+                "${memberList[index].name![0].toUpperCase()}",
                 style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -174,7 +174,7 @@ class _ControlMemberState extends State<ControlMember>
 
   Future _saveMember() async {
     final form = formKey.currentState;
-    if (form.validate()) {
+    if (form!.validate()) {
       setState(() => _isLoading = true);
       form.save();
       await _memberPresenter.doSaveMember(user, _memberEmail, _hwSeries);
@@ -187,11 +187,11 @@ class _ControlMemberState extends State<ControlMember>
 
   @override
   Widget build(BuildContext context) {
-    String emailValidator(String value) {
+    String? emailValidator(String? value) {
       Pattern pattern =
           r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-      RegExp regex = new RegExp(pattern);
-      if (!regex.hasMatch(value))
+      RegExp regex = new RegExp(pattern.toString());
+      if (!regex.hasMatch(value!))
         return 'Enter Valid email';
       else
         return null;
@@ -237,7 +237,7 @@ class _ControlMemberState extends State<ControlMember>
                 keyboardType: TextInputType.emailAddress,
                 focusNode: _memberFocus,
                 onSaved: (val) {
-                  _memberEmail = val;
+                  _memberEmail = val!;
                 },
                 onFieldSubmitted: (val) async {
                   await _saveMember();
@@ -283,9 +283,9 @@ class _ControlMemberState extends State<ControlMember>
                         child: new Text("${hw.hwName}"),
                       );
                     }).toList(),
-                    onChanged: (String val) {
+                    onChanged: (String? val) {
                       setState(() {
-                        _hwSeries = val;
+                        _hwSeries = val!;
                       });
                     },
                   ),
@@ -361,54 +361,49 @@ class _ControlMemberState extends State<ControlMember>
       );
     }
 
-    Widget createListView(
-        BuildContext context, List<Member> memberList, List<Hw> hwList) {
-      var len = 0;
-      if (memberList != null) {
-        len = memberList.length;
-      }
-      return new ListView.builder(
-        itemBuilder: (BuildContext context, int index) {
-          if (hwList.length == 0 && index == 0) {
-            return Container(
-              padding: EdgeInsets.only(top: 10.0),
-            );
-          } else if (hwList.length == 0 && index == 1) {
-            return Container(
-              child: Center(
-                child: Text("You do not have any hardware"),
-              ),
-            );
-          }
-          if (index == 0) {
-            return memberForm();
-          }
-          if (len != 0) {
-            if (index == 1) {
-              return getTitle();
-            }
-            return _getMemberObject(memberList, index - 2, len);
-          }
-        },
-        itemCount: len + 2,
-      );
-    }
+    // Widget createListView(
+    //     BuildContext context, List<Member> memberList, List<Hw> hwList) {
+    //   var len = 0;
+    //   if (memberList != null) {
+    //     len = memberList.length;
+    //   }
+    //   return new ListView.builder(
+    //     itemBuilder: (BuildContext context, int index) {
+    //       if (hwList.length == 0 && index == 0) {
+    //         return Container(
+    //           padding: EdgeInsets.only(top: 10.0),
+    //         );
+    //       } else if (hwList.length == 0 && index == 1) {
+    //         return Container(
+    //           child: Center(
+    //             child: Text("You do not have any hardware"),
+    //           ),
+    //         );
+    //       }
+    //       if (index == 0) {
+    //         return memberForm();
+    //       }
+    //       if (len != 0) {
+    //         if (index == 1) {
+    //           return getTitle();
+    //         }
+    //         return _getMemberObject(memberList, index - 2, len);
+    //       }
+    //     },
+    //     itemCount: len + 2,
+    //   );
+    // }
 
     return Scaffold(
-      appBar: _checkPlatform.isIOS()
-          ? CupertinoNavigationBar(
-              backgroundColor: kHAutoBlue100,
-              middle: new Text("Control Members"),
-            )
-          : AppBar(
-              title: Text("Control Members"),
-            ),
+      appBar: AppBar(
+        title: Text("Control Members"),
+      ),
       body: _isLoading
           ? ShowProgress()
           : internetAccess
               ? RefreshIndicator(
                   key: subscriptionRefreshIndicatorKey,
-                  child: createListView(context, memberList, hwList),
+                  child: Container(),
                   onRefresh: getMemberList,
                 )
               : RefreshIndicator(

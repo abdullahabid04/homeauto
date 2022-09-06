@@ -18,12 +18,12 @@ class SignupScreenState extends State<SignupScreen>
     implements SignupScreenContract {
   bool _isLoading = false, _isLoadingValue = false;
   bool _autoValidate = false;
-  ShowDialog _showDialog;
-  CheckPlatform _checkPlatform;
+  late ShowDialog _showDialog;
+  late CheckPlatform _checkPlatform;
 
   var scaffoldKey = new GlobalKey<ScaffoldState>();
   var formKey = new GlobalKey<FormState>();
-  String _name, _email, _password, _address, _city, _contact;
+  late String _name, _email, _password, _address, _city, _contact;
   String _passwordValidText =
       "Password should contain at least one small and large alpha characters";
 
@@ -34,7 +34,7 @@ class SignupScreenState extends State<SignupScreen>
   FocusNode _cityNode = new FocusNode();
   FocusNode _contactNode = new FocusNode();
 
-  SignupScreenPresenter _presenter;
+  late SignupScreenPresenter _presenter;
 
   @override
   void initState() {
@@ -49,7 +49,7 @@ class SignupScreenState extends State<SignupScreen>
 
   void _submit() async {
     final form = formKey.currentState;
-    if (form.validate()) {
+    if (form!.validate()) {
       setState(() => _isLoadingValue = true);
       form.save();
       await _presenter.doSignup(
@@ -81,7 +81,7 @@ class SignupScreenState extends State<SignupScreen>
   }
 
   void _showSnackBar(String text) {
-    scaffoldKey.currentState
+    scaffoldKey.currentState!
         .showSnackBar(new SnackBar(content: new Text(text)));
   }
 
@@ -93,12 +93,12 @@ class SignupScreenState extends State<SignupScreen>
 
   @override
   Widget build(BuildContext context) {
-    String nameValidator(String value) {
+    String? nameValidator(String? value) {
       Pattern pattern = r'^[a-zA-Z0-9/s]+$';
       Pattern pattern2 = r'^([0-9])+[a-zA-Z0-9/s]+$';
-      RegExp regex = new RegExp(pattern);
-      RegExp regex2 = new RegExp(pattern2);
-      if (value.isEmpty)
+      RegExp regex = new RegExp(pattern.toString());
+      RegExp regex2 = new RegExp(pattern2.toString());
+      if (value!.isEmpty)
         return 'Name should not be empty';
       else if (!regex.hasMatch(value))
         return 'Name should not contain special character';
@@ -110,30 +110,30 @@ class SignupScreenState extends State<SignupScreen>
         return null;
     }
 
-    String emailValidator(String value) {
+    String? emailValidator(String? value) {
       Pattern pattern =
           r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-      RegExp regex = new RegExp(pattern);
-      if (!regex.hasMatch(value))
+      RegExp regex = new RegExp(pattern.toString());
+      if (!regex.hasMatch(value!))
         return 'Enter Valid email';
       else
         return null;
     }
 
-    String passwordValidator(String value) {
+    String? passwordValidator(String? value) {
       Pattern pattern =
           r'^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})';
-      RegExp regex = new RegExp(pattern);
-      if (!regex.hasMatch(value))
+      RegExp regex = new RegExp(pattern.toString());
+      if (!regex.hasMatch(value!))
         return 'Enter valid password';
       else
         return null;
     }
 
-    String addressValidator(String value) {
+    String? addressValidator(String? value) {
       Pattern pattern = r'^[0-9a-zA-Z,/. ]+$';
-      RegExp regex = new RegExp(pattern);
-      if (value.isEmpty)
+      RegExp regex = new RegExp(pattern.toString());
+      if (value!.isEmpty)
         return 'Address should not be empty';
       else if (!regex.hasMatch(value))
         return 'Address should have only [,/. ] special characters';
@@ -143,10 +143,10 @@ class SignupScreenState extends State<SignupScreen>
         return null;
     }
 
-    String cityValidator(String value) {
+    String? cityValidator(String? value) {
       Pattern pattern = r'^[a-zA-Z]+$';
-      RegExp regex = new RegExp(pattern);
-      if (value.isEmpty)
+      RegExp regex = new RegExp(pattern.toString());
+      if (value!.isEmpty)
         return 'City should not be empty';
       else if (!regex.hasMatch(value))
         return 'City should not contain special characters';
@@ -156,10 +156,10 @@ class SignupScreenState extends State<SignupScreen>
         return null;
     }
 
-    String contactValidator(String value) {
+    String? contactValidator(String? value) {
       Pattern pattern = r'^[0-9]{10}$';
-      RegExp regex = new RegExp(pattern);
-      if (value.isEmpty)
+      RegExp regex = new RegExp(pattern.toString());
+      if (value!.isEmpty)
         return 'Contact should not be empty';
       else if (!regex.hasMatch(value))
         return 'Contact should only 10 contain numbers';
@@ -182,7 +182,7 @@ class SignupScreenState extends State<SignupScreen>
               children: <Widget>[
                 new TextFormField(
                   onSaved: (val) {
-                    _name = val;
+                    _name = val!;
                   },
                   autofocus: true,
                   focusNode: _nameNode,
@@ -209,7 +209,7 @@ class SignupScreenState extends State<SignupScreen>
                 ),
                 new TextFormField(
                   onSaved: (val) {
-                    _email = val;
+                    _email = val!;
                   },
                   focusNode: _emailNode,
                   keyboardType: TextInputType.emailAddress,
@@ -234,7 +234,7 @@ class SignupScreenState extends State<SignupScreen>
                 ),
                 new TextFormField(
                   onSaved: (val) {
-                    _password = val;
+                    _password = val!;
                   },
                   validator: passwordValidator,
                   obscureText: true,
@@ -273,7 +273,7 @@ class SignupScreenState extends State<SignupScreen>
                 ),
                 new TextFormField(
                   onSaved: (val) {
-                    _address = val;
+                    _address = val!;
                   },
                   focusNode: _addressNode,
                   keyboardType: TextInputType.text,
@@ -299,7 +299,7 @@ class SignupScreenState extends State<SignupScreen>
                 ),
                 new TextFormField(
                   onSaved: (val) {
-                    _city = val;
+                    _city = val!;
                   },
                   focusNode: _cityNode,
                   keyboardType: TextInputType.text,
@@ -325,7 +325,7 @@ class SignupScreenState extends State<SignupScreen>
                 ),
                 new TextFormField(
                   onSaved: (val) {
-                    _contact = val;
+                    _contact = val!;
                   },
                   focusNode: _contactNode,
                   keyboardType: TextInputType.phone,

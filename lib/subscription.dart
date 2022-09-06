@@ -11,27 +11,27 @@ import 'package:flutter/services.dart';
 import '/models/subscription_data.dart';
 
 class SubscriptionScreen extends StatefulWidget {
-  final User user;
+  final User? user;
   SubscriptionScreen({this.user});
   @override
-  _SubscriptionScreenState createState() => _SubscriptionScreenState(user);
+  _SubscriptionScreenState createState() => _SubscriptionScreenState(user!);
 }
 
 class _SubscriptionScreenState extends State<SubscriptionScreen>
     implements SubscriptionContract {
   bool _isLoading = true;
   bool internetAccess = false;
-  CheckPlatform _checkPlatform;
+  late CheckPlatform _checkPlatform;
 
-  User user;
-  ShowDialog showDialog;
-  ShowInternetStatus _showInternetStatus;
+  late User user;
+  late ShowDialog showDialog;
+  late ShowInternetStatus _showInternetStatus;
 
   var scaffoldKey = new GlobalKey<ScaffoldState>();
   var subscriptionRefreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
 
-  List<Subscription> subscriptionList = new List();
-  SubscriptionPresenter _subscriptionPresenter;
+  List<Subscription> subscriptionList = [];
+  late SubscriptionPresenter _subscriptionPresenter;
 
   _SubscriptionScreenState(User user) {
     this.user = user;
@@ -90,7 +90,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
         child: Container(
           padding: EdgeInsets.all(10.0),
           decoration: BoxDecoration(
-            border: Border.all(color: kHAutoBlue300, width: 2.0),
+            border: Border.all(color: kHAutoBlue300!, width: 2.0),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

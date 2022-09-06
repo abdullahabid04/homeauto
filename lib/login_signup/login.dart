@@ -20,18 +20,19 @@ class LoginScreen extends StatefulWidget {
 
 class LoginScreenState extends State<LoginScreen>
     implements LoginScreenContract, AuthStateListener {
-  User user;
+  late User user;
   bool _obscureText = true;
   bool _isLoadingValue = false;
   bool _isLoading = true;
   final formKey = new GlobalKey<FormState>();
   final scaffoldKey = new GlobalKey<ScaffoldState>();
-  String _password, _contact;
+  late String _password, _contact;
   bool _autoValidate = false;
-  LoginScreenPresenter _presenter;
-  ShowDialog _showDialog;
+  late LoginScreenPresenter _presenter;
+  late ShowDialog _showDialog;
   FocusNode _contactNode = new FocusNode();
   FocusNode _passwordNode = new FocusNode();
+
   LoginScreenState() {
     _presenter = new LoginScreenPresenter(this);
     var authStateProvider = new AuthStateProvider();
@@ -47,7 +48,7 @@ class LoginScreenState extends State<LoginScreen>
     super.initState();
   }
 
-  Function callbackUser(User userDetails) {
+  callbackUser(User userDetails) {
     setState(() {
       this.user = userDetails;
     });
@@ -57,7 +58,7 @@ class LoginScreenState extends State<LoginScreen>
     CheckInternetAccess checkInternetAccess = new CheckInternetAccess();
     if (await checkInternetAccess.check()) {
       final form = formKey.currentState;
-      if (form.validate()) {
+      if (form!.validate()) {
         setState(() => _isLoadingValue = true);
         form.save();
         await _presenter.doLogin(_contact, _password);
@@ -72,7 +73,7 @@ class LoginScreenState extends State<LoginScreen>
   }
 
   void _showSnackBar(String text) {
-    scaffoldKey.currentState
+    scaffoldKey.currentState!
         .showSnackBar(new SnackBar(content: new Text(text)));
   }
 
@@ -101,10 +102,10 @@ class LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
-    String contactValidator(String value) {
+    String? contactValidator(String? value) {
       Pattern pattern = r'^[0-9]{10}$';
-      RegExp regex = new RegExp(pattern);
-      if (value.isEmpty)
+      RegExp regex = new RegExp(pattern.toString());
+      if (value!.isEmpty)
         return 'Contact should not be empty';
       else if (!regex.hasMatch(value))
         return 'Contact should only 10 contain numbers';
@@ -112,8 +113,8 @@ class LoginScreenState extends State<LoginScreen>
         return null;
     }
 
-    String validatePassword(String value) {
-      if (value.isEmpty)
+    String? validatePassword(String? value) {
+      if (value!.isEmpty)
         return 'Please enter password';
       else
         return null;
@@ -177,7 +178,7 @@ class LoginScreenState extends State<LoginScreen>
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: new TextFormField(
                   autofocus: true,
-                  onSaved: (val) => _contact = val,
+                  onSaved: (val) => _contact = val!,
                   validator: contactValidator,
                   focusNode: _contactNode,
                   keyboardType: TextInputType.phone,
@@ -203,7 +204,7 @@ class LoginScreenState extends State<LoginScreen>
                   children: <Widget>[
                     Expanded(
                       child: new TextFormField(
-                        onSaved: (val) => _password = val,
+                        onSaved: (val) => _password = val!,
                         validator: validatePassword,
                         focusNode: _passwordNode,
                         keyboardType: TextInputType.text,
@@ -298,7 +299,7 @@ class LoginScreenState extends State<LoginScreen>
   void onLoginSuccess(User user) async {
     setState(() => _isLoadingValue = false);
     final form = formKey.currentState;
-    form.reset();
+    form!.reset();
     var authStateProvider = new AuthStateProvider();
     authStateProvider.notify(AuthState.LOGGED_IN, user);
   }

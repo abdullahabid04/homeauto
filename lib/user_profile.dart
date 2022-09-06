@@ -10,12 +10,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 class UserProfile extends StatefulWidget {
-  final User user;
-  final Function callbackUser;
+  final User? user;
+  final Function? callbackUser;
   UserProfile({this.user, this.callbackUser});
   @override
   UserProfileState createState() {
-    return UserProfileState(user, callbackUser);
+    return UserProfileState(user!, callbackUser);
   }
 }
 
@@ -23,14 +23,14 @@ class UserProfileState extends State<UserProfile>
     implements UserUpdateContract {
   bool _isLoading = false;
   bool internetAccess = false;
-  CheckPlatform _checkPlatform;
+  late CheckPlatform _checkPlatform;
 
-  User user;
-  ShowDialog showDialog;
-  ShowInternetStatus _showInternetStatus;
-  UserUpdatePresenter _userUpdatePresenter;
+  late User user;
+  late ShowDialog showDialog;
+  late ShowInternetStatus _showInternetStatus;
+  late UserUpdatePresenter _userUpdatePresenter;
 
-  String _name, _email, _mobile, _address, _city;
+  late String _name, _email, _mobile, _address, _city;
   var scaffoldKey = new GlobalKey<ScaffoldState>();
   var formKey = new GlobalKey<FormState>();
   bool _autoValidate = false;
@@ -40,9 +40,9 @@ class UserProfileState extends State<UserProfile>
   final FocusNode _cityFocus = new FocusNode();
   final FocusNode _mobileFocus = new FocusNode();
 
-  Function callbackUser;
+  late Function callbackUser;
 
-  Function callbackThis(User userDetails) {
+  callbackThis(User userDetails) {
     this.callbackUser(userDetails);
     setState(() {
       this.user = userDetails;
@@ -97,7 +97,7 @@ class UserProfileState extends State<UserProfile>
   void _showSnackBar(String text) {
     this
         .scaffoldKey
-        .currentState
+        .currentState!
         .showSnackBar(new SnackBar(content: new Text(text)));
   }
 
@@ -130,7 +130,7 @@ class UserProfileState extends State<UserProfile>
     await getInternetAccessObject();
     if (internetAccess) {
       var form = formKey.currentState;
-      if (form.validate()) {
+      if (form!.validate()) {
         form.save();
         if (this.user.name != _name ||
             this.user.city != _city ||
@@ -157,10 +157,10 @@ class UserProfileState extends State<UserProfile>
   }
 
   Widget _showBody(BuildContext context) {
-    String cityValidator(String value) {
+    String? cityValidator(String? value) {
       Pattern pattern = r'^[a-zA-Z]+$';
-      RegExp regex = new RegExp(pattern);
-      if (value.isEmpty)
+      RegExp regex = new RegExp(pattern.toString());
+      if (value!.isEmpty)
         return 'City should not be empty';
       else if (!regex.hasMatch(value))
         return 'City should not contain special characters';
@@ -170,10 +170,10 @@ class UserProfileState extends State<UserProfile>
         return null;
     }
 
-    String contactValidator(String value) {
+    String? contactValidator(String? value) {
       Pattern pattern = r'^[0-9]{10}$';
-      RegExp regex = new RegExp(pattern);
-      if (value.isEmpty)
+      RegExp regex = new RegExp(pattern.toString());
+      if (value!.isEmpty)
         return 'Contact should not be empty';
       else if (!regex.hasMatch(value))
         return 'Contact should only 10 contain numbers';
@@ -181,12 +181,12 @@ class UserProfileState extends State<UserProfile>
         return null;
     }
 
-    String nameValidator(String value) {
+    String? nameValidator(String? value) {
       Pattern pattern = r'^[a-zA-Z0-9]+$';
       Pattern pattern2 = r'^([0-9])+[a-zA-Z0-9]+$';
-      RegExp regex = new RegExp(pattern);
-      RegExp regex2 = new RegExp(pattern2);
-      if (value.isEmpty)
+      RegExp regex = new RegExp(pattern.toString());
+      RegExp regex2 = new RegExp(pattern2.toString());
+      if (value!.isEmpty)
         return 'Name should not be empty';
       else if (!regex.hasMatch(value))
         return 'Name should not contain special character';
@@ -198,10 +198,10 @@ class UserProfileState extends State<UserProfile>
         return null;
     }
 
-    String addressValidator(String value) {
+    String? addressValidator(String? value) {
       Pattern pattern = r'^[0-9a-zA-Z,/. ]+$';
-      RegExp regex = new RegExp(pattern);
-      if (value.isEmpty)
+      RegExp regex = new RegExp(pattern.toString());
+      if (value!.isEmpty)
         return 'Address should not be empty';
       else if (!regex.hasMatch(value))
         return 'Address should have only [,/. ] special characters';
@@ -225,7 +225,7 @@ class UserProfileState extends State<UserProfile>
                   elevation: 10.0,
                   child: Container(
                     decoration: BoxDecoration(
-                      border: Border.all(color: kHAutoBlue300, width: 2.0),
+                      border: Border.all(color: kHAutoBlue300!, width: 2.0),
                     ),
                     child: Container(
                       padding: EdgeInsets.all(10.0),
@@ -262,7 +262,7 @@ class UserProfileState extends State<UserProfile>
                             TextFormField(
                               initialValue: _name,
                               onSaved: (val) {
-                                _name = val;
+                                _name = val!;
                               },
                               autofocus: true,
                               focusNode: _nameFocus,
@@ -292,7 +292,7 @@ class UserProfileState extends State<UserProfile>
                             TextFormField(
                               initialValue: _address,
                               onSaved: (val) {
-                                _address = val;
+                                _address = val!;
                               },
                               keyboardType: TextInputType.text,
                               textInputAction: TextInputAction.next,
@@ -321,7 +321,7 @@ class UserProfileState extends State<UserProfile>
                             TextFormField(
                               initialValue: _city,
                               onSaved: (val) {
-                                _city = val;
+                                _city = val!;
                               },
                               textCapitalization: TextCapitalization.sentences,
                               textInputAction: TextInputAction.next,
@@ -349,7 +349,7 @@ class UserProfileState extends State<UserProfile>
                             TextFormField(
                               initialValue: _mobile,
                               onSaved: (val) {
-                                _mobile = val;
+                                _mobile = val!;
                               },
                               keyboardType: TextInputType.phone,
                               textInputAction: TextInputAction.next,

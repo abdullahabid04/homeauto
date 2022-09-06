@@ -4,10 +4,10 @@ import '/utils/custom_exception.dart';
 import '/utils/api_response.dart';
 
 class RoomData {
-  int status;
-  String message;
-  int total;
-  List<Room> room;
+  int? status;
+  String? message;
+  int? total;
+  List<Room>? room;
 
   RoomData({this.status, this.message, this.total, this.room});
 
@@ -18,7 +18,7 @@ class RoomData {
     if (json['room'] != null) {
       room = <Room>[];
       json['room'].forEach((v) {
-        room.add(new Room.fromJson(v));
+        room!.add(new Room.fromJson(v));
       });
     }
   }
@@ -29,18 +29,18 @@ class RoomData {
     data['message'] = this.message;
     data['total'] = this.total;
     if (this.room != null) {
-      data['room'] = this.room.map((v) => v.toJson()).toList();
+      data['room'] = this.room!.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
 class Room {
-  String id;
-  String userId;
-  String homeId;
-  String roomId;
-  String roomName;
+  String? id;
+  String? userId;
+  String? homeId;
+  String? roomId;
+  String? roomName;
 
   Room({this.id, this.userId, this.homeId, this.roomId, this.roomName});
 

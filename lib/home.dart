@@ -11,38 +11,38 @@ import '/UserDashBoard/mydrawer.dart';
 import 'models/device_data.dart';
 
 class HomeScreen extends StatefulWidget {
-  final User user;
-  final Function callbackUser;
+  final User? user;
+  final Function? callbackUser;
   HomeScreen({this.user, this.callbackUser});
   @override
   HomeScreenState createState() {
-    return new HomeScreenState(user, callbackUser);
+    return new HomeScreenState(user!, callbackUser!);
   }
 }
 
 class HomeScreenState extends State<HomeScreen> implements DeviceContract {
   bool _isLoading = true;
   bool internetAccess = false;
-  CheckPlatform _checkPlatform;
-  ShowInternetStatus _showInternetStatus;
-  GoToUserProfile _goToUserProfile;
-  DevicePresenter _presenter;
-  List<Devices> devices = new List<Devices>();
-  MyDrawer _myDrawer;
+  late CheckPlatform _checkPlatform;
+  late ShowInternetStatus _showInternetStatus;
+  late GoToUserProfile _goToUserProfile;
+  late DevicePresenter _presenter;
+  List<Devices> devices = <Devices>[];
+  late MyDrawer _myDrawer;
 
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   var homeRefreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
 
   void _showSnackBar(String text) {
-    scaffoldKey.currentState.removeCurrentSnackBar();
-    scaffoldKey.currentState
+    scaffoldKey.currentState!.removeCurrentSnackBar();
+    scaffoldKey.currentState!
         .showSnackBar(new SnackBar(content: new Text(text)));
   }
 
-  User user;
-  Function callbackUser;
+  late User user;
+  late Function callbackUser;
 
-  Function callbackThis(User user) {
+  callbackThis(User user) {
     this.callbackUser(user);
     setState(() {
       this.user = user;
@@ -142,7 +142,7 @@ class HomeScreenState extends State<HomeScreen> implements DeviceContract {
   @override
   void onDeviceSuccess(DeviceData userDetails) {
     setState(() {
-      devices = userDetails.devices;
+      devices = userDetails.devices!;
     });
     Future.delayed(const Duration(seconds: 1));
     setState(() {
