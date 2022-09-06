@@ -56,12 +56,7 @@ class _SplashScreenState extends State<SplashScreen> {
             width: 140.0,
             child: const Center(
               child: ClipOval(
-                child: Icon(
-                  Icons.water_drop,
-                  color: Colors.lightBlueAccent,
-                  size: 128,
-                ), //put your logo here
-              ),
+                  child: Image(image: AssetImage("assets/images/logo.png"))),
             ),
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
