@@ -137,9 +137,9 @@ class RoomScreenPresenter {
     }
   }
 
-  doDeleteRoom(String user_id, String room_id) async {
+  doDeleteRoom(String? user_id, String? room_id) async {
     try {
-      var r = await api.delete(user_id, room_id);
+      var r = await api.delete(user_id!, room_id!);
       _view.onSuccessDelete(r);
     } on Exception catch (error) {
       _view.onError(error.toString());

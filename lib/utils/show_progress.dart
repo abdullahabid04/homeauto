@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import '/utils/color_loader.dart';
 
 class ShowProgress extends StatelessWidget {
@@ -8,9 +7,9 @@ class ShowProgress extends StatelessWidget {
     return Container(
       child: Center(
           child: ColorLoader(
-        color1: Colors.redAccent,
-        color2: Colors.blue,
-        color3: Colors.green,
+        color1: Colors.red,
+        color2: Colors.green,
+        color3: Colors.blue,
       )),
     );
   }

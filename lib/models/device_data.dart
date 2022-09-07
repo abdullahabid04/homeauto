@@ -191,9 +191,9 @@ class DeviceUpdatePresenter {
     }
   }
 
-  deleteDevice(String user_id, String device_id) async {
+  doDeleteDevice(String? user_id, String? device_id) async {
     try {
-      ResponseDataAPI user = await api.deleteDevice(user_id, device_id);
+      ResponseDataAPI user = await api.deleteDevice(user_id!, device_id!);
       if (user == null) {
         _view.onDeviceDeleteError("Update Failed");
       } else {

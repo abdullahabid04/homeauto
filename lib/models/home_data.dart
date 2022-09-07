@@ -96,9 +96,12 @@ class SendHomeData {
 
   Future<ResponseDataAPI> rename(
       String user_id, String home_id, String home_name) async {
+    print(user_id);
+    print(home_id);
+    print(home_name);
     return _netUtil.post(updateURL, body: {
-      "uer_id": user_id,
-      "home_id": user_id,
+      "user_id": user_id,
+      "home_id": home_id,
       "home_name": home_name
     }).then((dynamic res) {
       print(res.toString());
@@ -129,18 +132,21 @@ class HomeScreenPresenter {
     }
   }
 
-  doDeleteHome(String user_id, String home_id) async {
+  doDeleteHome(String? user_id, String? home_id) async {
     try {
-      var h = await api.delete(user_id, home_id);
+      var h = await api.delete(user_id!, home_id!);
       _view.onSuccessDelete(h);
     } on Exception catch (error) {
       _view.onError(error.toString());
     }
   }
 
-  doRenameHome(String user_id, String home_id, String home_name) async {
+  doRenameHome(String? user_id, String? home_id, String? home_name) async {
     try {
-      var h = await api.rename(user_id, home_id, home_name);
+      print(user_id);
+      print(home_id);
+      print(home_name);
+      var h = await api.rename(user_id!, home_id!, home_name!);
       _view.onSuccessRename(h);
     } on Exception catch (error) {
       _view.onError(error.toString());

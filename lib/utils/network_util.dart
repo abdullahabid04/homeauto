@@ -23,14 +23,26 @@ class NetworkUtil {
   }
 
   Future<dynamic> post(String url, {body}) {
+    print(body.toString());
+    print("hello before");
     return http.post(Uri.parse(url), body: body).then((http.Response response) {
+      print("hello in post berfore res");
       final String res = response.body;
+      print("response");
+      print(res.toString());
+      print("end");
+      print("hello in post after res");
       final int statusCode = response.statusCode;
-
+      print("hello in post after code");
       if (statusCode < 200 || statusCode > 400 || json == null) {
+        print("hello in if before exception");
         throw new Exception("Error while fetching data");
+        print("hello in if after exception");
       }
+      print("hello in post after if");
       return _decoder.convert(res);
+      print("hello in post before end");
     });
+    print("hello after");
   }
 }
