@@ -33,12 +33,6 @@ class HomeScreenState extends State<HomeScreen> implements DeviceContract {
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   var homeRefreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
 
-  void _showSnackBar(String text) {
-    scaffoldKey.currentState!.removeCurrentSnackBar();
-    scaffoldKey.currentState!
-        .showSnackBar(new SnackBar(content: new Text(text)));
-  }
-
   late User user;
   late Function callbackUser;
 
@@ -89,14 +83,18 @@ class HomeScreenState extends State<HomeScreen> implements DeviceContract {
         await _presenter.doGetDevices("12-abdullahnew-2244668800");
   }
 
+  void _showSnackBar(String text) {
+    scaffoldKey.currentState!.removeCurrentSnackBar();
+    scaffoldKey.currentState!
+        .showSnackBar(new SnackBar(content: new Text(text)));
+  }
+
   @override
   Widget build(BuildContext context) {
-    _goToUserProfile = new GoToUserProfile(
-        context: context,
-        isIOS: _checkPlatform.isIOS(),
-        user: user,
-        callbackThis: this.callbackThis);
-    _myDrawer = new MyDrawer();
+    _myDrawer = new MyDrawer(
+      user: this.user,
+      callbackUser: this.callbackUser,
+    );
 
     return WillPopScope(
       onWillPop: () => new Future<bool>.value(false),
@@ -111,9 +109,7 @@ class HomeScreenState extends State<HomeScreen> implements DeviceContract {
               fontSize: 15.0,
             ),
           ),
-          actions: <Widget>[
-            _goToUserProfile.showUser(),
-          ],
+          actions: <Widget>[],
         ),
         body: _isLoading
             ? ShowProgress()
