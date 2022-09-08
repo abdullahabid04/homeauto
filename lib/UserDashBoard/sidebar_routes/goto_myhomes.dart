@@ -56,7 +56,7 @@ class _MyHomesState extends State<MyHomes> implements GetHomeContract {
   }
 
   gethomeList() async {
-    await _presenter.doGetHome("12-abdullahnew-2244668800");
+    await _presenter.doGetHome("13-abdullah-1029384756");
   }
 
   @override

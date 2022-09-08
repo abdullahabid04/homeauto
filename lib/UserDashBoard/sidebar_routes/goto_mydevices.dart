@@ -56,7 +56,7 @@ class _MyDevicesState extends State<MyDevices> implements DeviceContract {
   }
 
   getDeviceList() async {
-    await _presenter.doGetDevices("12-abdullahnew-2244668800");
+    await _presenter.doGetDevices("13-abdullah-1029384756");
   }
 
   @override

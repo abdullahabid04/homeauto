@@ -80,7 +80,7 @@ class HomeScreenState extends State<HomeScreen> implements DeviceContract {
 
   getDeviceList() async {
     DeviceData _deviceData =
-        await _presenter.doGetDevices("12-abdullahnew-2244668800");
+        await _presenter.doGetDevices("13-abdullah-1029384756");
   }
 
   void _showSnackBar(String text) {
@@ -131,9 +131,7 @@ class HomeScreenState extends State<HomeScreen> implements DeviceContract {
   }
 
   @override
-  void onDeviceError() {
-    // TODO: implement onDeviceError
-  }
+  void onDeviceError() {}
 
   @override
   void onDeviceSuccess(DeviceData userDetails) {

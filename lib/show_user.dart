@@ -129,70 +129,8 @@ class ShowUserState extends State<ShowUser> implements UserUpdateContract {
           SizedBox(
             height: 5.0,
           ),
-          ListTile(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SubscriptionScreen(user: this.user),
-                ),
-              );
-            },
-            title: Text("Subscription"),
-          ),
           SizedBox(
-            height: 5.0,
-          ),
-          ListTile(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ControlMember(
-                    user: this.user,
-                  ),
-                ),
-              );
-            },
-            title: Text("Control Members"),
-          ),
-          SizedBox(
-            height: 5.0,
-          ),
-          ListTile(
-            onTap: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) => ScheduledDevice(
-              //       user: this.user,
-              //     ),
-              //   ),
-              // );
-            },
-            title: Text("Scheduled Devices"),
-          ),
-          SizedBox(
-            height: 5.0,
-          ),
-          ListTile(
-            onTap: () async {
-              try {
-                await getAppLink();
-                // final RenderBox box = context.findRenderObject();
-                // Share.share(
-                //     "To install Home Automation, Click on below link \n $link",
-                //     sharePositionOrigin:
-                //         box.localToGlobal(Offset.zero) & box.size);
-              } on Exception catch (error) {
-                onUserUpdateError(error.toString());
-              }
-              if (_isLoading)
-                setState(() {
-                  _isLoading = false;
-                });
-            },
-            title: Text("Share"),
+            height: 50.0,
           ),
           Container(
             padding: EdgeInsets.zero,
