@@ -79,8 +79,7 @@ class HomeScreenState extends State<HomeScreen> implements DeviceContract {
   }
 
   getDeviceList() async {
-    DeviceData _deviceData =
-        await _presenter.doGetDevices("13-abdullah-1029384756");
+    await _presenter.doGetDevices(this.user.userid);
   }
 
   void _showSnackBar(String text) {

@@ -1,5 +1,6 @@
 import '../utils/custom_exception.dart';
 import '../utils/network_util.dart';
+import '/utils/api_response.dart';
 
 class DeviceInfo {
   int? status;
@@ -36,6 +37,8 @@ class DeviceInfo {
 class Info {
   String? id;
   String? userId;
+  String? homeId;
+  String? roomId;
   String? userRole;
   String? shared;
   String? deviceId;
@@ -45,6 +48,8 @@ class Info {
   Info(
       {this.id,
       this.userId,
+      this.homeId,
+      this.roomId,
       this.userRole,
       this.shared,
       this.deviceId,
@@ -54,6 +59,8 @@ class Info {
   Info.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     userId = json['user_id'];
+    homeId = json['home_id'];
+    roomId = json['room_id'];
     userRole = json['user_role'];
     shared = json['shared'];
     deviceId = json['device_id'];
@@ -65,6 +72,8 @@ class Info {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['user_id'] = this.userId;
+    data['home_id'] = this.homeId;
+    data['room_id'] = this.roomId;
     data['user_role'] = this.userRole;
     data['shared'] = this.shared;
     data['device_id'] = this.deviceId;
@@ -77,14 +86,52 @@ class Info {
 class RequestDeviceInfo {
   NetworkUtil _netUtil = new NetworkUtil();
   static final baseURL = 'http://care-engg.com/api/device';
-  static final DeviceInfoURL = baseURL + "/info";
+  static final deviceInfoURL = baseURL + "/info";
+  static final deviceShareURL = baseURL + "/share";
+  static final devicePowerURL = baseURL + "/power";
 
   Future<DeviceInfo> getDevicesInfo(String user) async {
     return _netUtil
-        .post(DeviceInfoURL, body: {"user_id": user}).then((dynamic res) {
+        .post(deviceInfoURL, body: {"user_id": user}).then((dynamic res) {
       print(res.toString());
       if (res["status"] == 0) throw new FormException(res["message"]);
       return DeviceInfo.fromJson(res);
+    });
+  }
+
+  Future<ResponseDataAPI> shareDevice(
+      String user_id,
+      String shared_to_contact,
+      String home_id,
+      String room_id,
+      String device_id,
+      String device_name,
+      String device_type) async {
+    return _netUtil.post(deviceShareURL, body: {
+      "user_id": user_id,
+      "shared_to_contact": shared_to_contact,
+      "home_id": home_id,
+      "room_id": room_id,
+      "device_id": device_id,
+      "device_name": device_name,
+      "device_type": device_type
+    }).then((dynamic res) {
+      print(res.toString());
+      if (res["status"] == 0) throw new FormException(res["message"]);
+      return ResponseDataAPI.fromJson(res);
+    });
+  }
+
+  Future<ResponseDataAPI> powerDevice(
+      String user_id, String device_id, String device_status) async {
+    return _netUtil.post(devicePowerURL, body: {
+      "user_id": user_id,
+      "device_id": device_id,
+      "device_status": device_status
+    }).then((dynamic res) {
+      print(res.toString());
+      if (res["status"] == 0) throw new FormException(res["message"]);
+      return ResponseDataAPI.fromJson(res);
     });
   }
 }
@@ -92,6 +139,10 @@ class RequestDeviceInfo {
 abstract class DeviceInfoContract {
   void onDeviceInfoSuccess(DeviceInfo deviceInfo);
   void onDeviceInfoError();
+  void onShareDeviceSuccess(String? message);
+  void onShareDeviceError();
+  void onPowerDeviceSuccess(String? message);
+  void onPowerDeviceError();
 }
 
 class DeviceInfoPresenter {
@@ -110,6 +161,43 @@ class DeviceInfoPresenter {
     } on Exception catch (error) {
       print(error.toString());
       _view.onDeviceInfoError();
+    }
+  }
+
+  doShareDevice(
+      String user_id,
+      String shared_to_contact,
+      String home_id,
+      String room_id,
+      String device_id,
+      String device_name,
+      String device_type) async {
+    try {
+      var deviceShare = await api.shareDevice(user_id, shared_to_contact,
+          home_id, room_id, device_id, device_name, device_type);
+      if (deviceShare == null) {
+        _view.onShareDeviceError();
+      } else {
+        _view.onShareDeviceSuccess(deviceShare.message);
+      }
+    } on Exception catch (error) {
+      print(error.toString());
+      _view.onShareDeviceError();
+    }
+  }
+
+  doPowerDevice(String user_id, String device_id, String device_status) async {
+    try {
+      var devicePower =
+          await api.powerDevice(user_id, device_id, device_status);
+      if (devicePower == null) {
+        _view.onPowerDeviceError();
+      } else {
+        _view.onPowerDeviceSuccess(devicePower.message);
+      }
+    } on Exception catch (error) {
+      print(error.toString());
+      _view.onPowerDeviceError();
     }
   }
 }
