@@ -30,7 +30,7 @@ class UserProfileState extends State<UserProfile>
   late ShowInternetStatus _showInternetStatus;
   late UserUpdatePresenter _userUpdatePresenter;
 
-  late String _name, _email, _mobile, _address, _city;
+  late String _name, _email, _mobile, _address, _city, _userId;
   var scaffoldKey = new GlobalKey<ScaffoldState>();
   var formKey = new GlobalKey<FormState>();
   bool _autoValidate = false;
@@ -89,6 +89,7 @@ class UserProfileState extends State<UserProfile>
       _mobile = this.user.mobile;
       _address = this.user.address;
       _city = this.user.city;
+      _userId = this.user.userid;
     } catch (e) {
       Navigator.of(context).pop();
     }
@@ -140,7 +141,7 @@ class UserProfileState extends State<UserProfile>
             _isLoading = true;
           });
           await _userUpdatePresenter.doUpdateUser(
-              _email, _name, _address, _city, _mobile);
+              _userId, _email, _name, _address, _city, _mobile);
         } else {
           this
               .showDialog

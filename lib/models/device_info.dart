@@ -142,7 +142,7 @@ abstract class DeviceInfoContract {
   void onShareDeviceSuccess(String? message);
   void onShareDeviceError();
   void onPowerDeviceSuccess(String? message);
-  void onPowerDeviceError();
+  void onPowerDeviceError(String? message);
 }
 
 class DeviceInfoPresenter {
@@ -191,13 +191,13 @@ class DeviceInfoPresenter {
       var devicePower =
           await api.powerDevice(user_id, device_id, device_status);
       if (devicePower == null) {
-        _view.onPowerDeviceError();
+        _view.onPowerDeviceError(device_id);
       } else {
-        _view.onPowerDeviceSuccess(devicePower.message);
+        _view.onPowerDeviceSuccess(device_id);
       }
     } on Exception catch (error) {
       print(error.toString());
-      _view.onPowerDeviceError();
+      _view.onPowerDeviceError(device_id);
     }
   }
 }

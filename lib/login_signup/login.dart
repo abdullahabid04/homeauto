@@ -35,16 +35,20 @@ class LoginScreenState extends State<LoginScreen>
 
   LoginScreenState() {
     _presenter = new LoginScreenPresenter(this);
-    var authStateProvider = new AuthStateProvider();
-    authStateProvider.subscribe(this);
-    authStateProvider.initState();
+    // var authStateProvider = new AuthStateProvider();
+    // authStateProvider.subscribe(this);
+    // authStateProvider.initState();
   }
+
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
     _showDialog = new ShowDialog();
+    var authStateProvider = new AuthStateProvider();
+    authStateProvider.subscribe(this);
+    authStateProvider.initState();
     super.initState();
   }
 
@@ -78,9 +82,9 @@ class LoginScreenState extends State<LoginScreen>
   }
 
   @override
-  onAuthStateChanged(AuthState state, User user) {
+  onAuthStateChanged(AuthState state, User? user) {
     if (state == AuthState.LOGGED_IN) {
-      this.callbackUser(user);
+      this.callbackUser(user!);
       Navigator.push(
           context,
           MaterialPageRoute(
@@ -88,10 +92,14 @@ class LoginScreenState extends State<LoginScreen>
                     user: this.user,
                     callbackUser: this.callbackUser,
                   )));
+      setState(() {
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
     }
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   void _fieldFocusChange(

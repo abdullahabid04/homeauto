@@ -24,6 +24,8 @@ class UserDevices extends StatefulWidget {
 class _UserDevicesState extends State<UserDevices>
     implements DeviceUpdateContract, DeviceInfoContract {
   bool _isLoading = true;
+  bool _isChangingState = false;
+  Map<String, bool> _changeState = new Map<String, bool>();
   bool internetAccess = false;
   late ShowDialog _showDialog;
   late ShowInternetStatus _showInternetStatus;
@@ -431,42 +433,50 @@ class _UserDevicesState extends State<UserDevices>
                           ),
                         ),
                       ),
-                      Expanded(
-                        child: SizedBox(
-                          child: TextButton(
-                            onPressed: () async {
-                              _showDeviceShareDialog(device);
-                            },
-                            child: Icon(Icons.share),
-                          ),
-                        ),
-                      ),
                       SizedBox(
-                        width: 20.0,
+                        width: _changeState[device.deviceId!] == true
+                            ? 50.0
+                            : 20.0,
                       ),
-                      Expanded(
-                        child: SizedBox(
-                          child: Switch(
-                            focusColor: Colors.white,
-                            hoverColor: Colors.black,
-                            activeColor: Colors.green,
-                            activeTrackColor: Colors.blue,
-                            inactiveThumbColor: Colors.red,
-                            inactiveTrackColor: Colors.yellow,
-                            value: info.active == "1" ? true : false,
-                            onChanged: (bool value) {
-                              setState(() {
-                                _isLoading = true;
-                                info.active = value == true ? "1" : "0";
-                              });
-                              _powerDevice(device.userId!, device.deviceId!,
-                                  value == true ? "on" : "off");
-                            },
-                            autofocus: true,
-                            splashRadius: 15.0,
-                          ),
-                        ),
-                      )
+                      _changeState[device.deviceId!] == true
+                          ? Container(
+                              padding: EdgeInsets.only(right: 15.0, left: 10.0),
+                              child: SizedBox(
+                                width: 10.0,
+                                height: 10.0,
+                                child: CircularProgressIndicator(
+                                  color: info.active == "1"
+                                      ? Colors.green
+                                      : Colors.red,
+                                  strokeWidth: 2.0,
+                                ),
+                              ),
+                            )
+                          : Expanded(
+                              child: SizedBox(
+                                child: Switch(
+                                  focusColor: Colors.white,
+                                  hoverColor: Colors.black,
+                                  activeColor: Colors.green,
+                                  activeTrackColor: Colors.blue,
+                                  inactiveThumbColor: Colors.red,
+                                  inactiveTrackColor: Colors.yellow,
+                                  value: info.active == "1" ? true : false,
+                                  onChanged: (bool value) {
+                                    setState(() {
+                                      _changeState[device.deviceId!] = true;
+                                      info.active = value == true ? "1" : "0";
+                                    });
+                                    _powerDevice(
+                                        device.userId!,
+                                        device.deviceId!,
+                                        value == true ? "on" : "off");
+                                  },
+                                  autofocus: true,
+                                  splashRadius: 15.0,
+                                ),
+                              ),
+                            ),
                     ],
                   ),
                 ),
@@ -552,7 +562,20 @@ class _UserDevicesState extends State<UserDevices>
                             child: Icon(Icons.delete),
                           ),
                         ),
-                      )
+                      ),
+                      Expanded(
+                        child: SizedBox(
+                          child: TextButton(
+                            onPressed: () async {
+                              _showDeviceShareDialog(device);
+                            },
+                            child: Icon(Icons.share),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 20.0,
+                      ),
                     ],
                   ),
                 )
@@ -619,14 +642,14 @@ class _UserDevicesState extends State<UserDevices>
   }
 
   @override
-  void onPowerDeviceError() {
+  void onPowerDeviceError(String? message) {
     _showDialog.showDialogCustom(context, "Error", "Device state not changed");
-    setState(() => _isLoading = false);
+    setState(() => _changeState[message!] = false);
   }
 
   @override
   void onPowerDeviceSuccess(String? message) {
-    _showDialog.showDialogCustom(context, "Success", message!);
-    setState(() => _isLoading = false);
+    _showDialog.showDialogCustom(context, "Success", "Device state changed");
+    setState(() => _changeState[message!] = false);
   }
 }

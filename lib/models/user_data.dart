@@ -68,18 +68,18 @@ class RequestUser {
         .post(getUserURL, body: {"user_id": user}).then((dynamic res) {
       print(res.toString());
       if (res["status"] == 0) throw new FormException(res["message"]);
-      return User.map(res['user']);
+      return User.map(res['profile']);
     });
   }
 
-  Future<User> updateUser(String email, String name, String address,
-      String city, String mobile) async {
+  Future<User> updateUser(String user_id, String email, String name,
+      String address, String city, String mobile) async {
     return _netUtil.post(updateUserURL, body: {
-      "user_id": email,
+      "user_id": user_id,
       "user_name": name,
       "mobile_no": mobile,
       "city": city,
-      "adddress": address
+      "address": address
     }).then((dynamic res) {
       print(res.toString());
       if (res["status"] == 0) throw new FormException(res["message"]);
@@ -150,10 +150,11 @@ class UserUpdatePresenter {
   RequestUser api = new RequestUser();
   UserUpdatePresenter(this._view);
 
-  doUpdateUser(String email, String name, String address, String city,
-      String mobile) async {
+  doUpdateUser(String user_id, String email, String name, String address,
+      String city, String mobile) async {
     try {
-      User user = await api.updateUser(email, name, address, city, mobile);
+      User user =
+          await api.updateUser(user_id, email, name, address, city, mobile);
       if (user == null) {
         _view.onUserUpdateError("Update Failed");
       } else {

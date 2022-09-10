@@ -4,7 +4,7 @@ import '/models/user_data.dart';
 enum AuthState { LOGGED_IN, LOGGED_OUT }
 
 abstract class AuthStateListener {
-  void onAuthStateChanged(AuthState state, User user);
+  void onAuthStateChanged(AuthState state, User? user);
 }
 
 class AuthStateProvider implements UserContract {
@@ -27,8 +27,8 @@ class AuthStateProvider implements UserContract {
   }
 
   void initState() async {
-    bool isLoggedIn = true;
-    var user_id = "Boygood-0000000000";
+    bool isLoggedIn = false;
+    var user_id = "13-abdullah-1029384756";
     if (isLoggedIn) {
       if (internetAccess) {
         await _userPresenter!.doGetUser(user_id);
@@ -38,8 +38,7 @@ class AuthStateProvider implements UserContract {
         print("hello else");
       }
     } else {
-      User user = new User(0, "", "", "", "", "", "", "", "");
-      notify(AuthState.LOGGED_OUT, user);
+      notify(AuthState.LOGGED_OUT, null);
     }
   }
 
@@ -53,15 +52,14 @@ class AuthStateProvider implements UserContract {
     }
   }
 
-  void notify(AuthState state, User user) {
+  void notify(AuthState state, User? user) {
     _subscribers!
         .forEach((AuthStateListener s) => s.onAuthStateChanged(state, user));
   }
 
   @override
   void onUserError() {
-    User user = new User(0, "", "", "", "", "", "", "", "");
-    notify(AuthState.LOGGED_OUT, user);
+    notify(AuthState.LOGGED_OUT, null);
   }
 
   @override
