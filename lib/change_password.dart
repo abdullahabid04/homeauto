@@ -110,7 +110,7 @@ class ChangePasswordState extends State<ChangePassword>
             _isLoadingValue = true;
           });
           await _userUpdatePresenter.doChangePassword(
-              this.user.email, _oldPassword, _newPassword);
+              this.user.userId!, _oldPassword, _newPassword);
           form.reset();
         } else {
           this._isError = true;

@@ -12,7 +12,7 @@ import 'package:flutter/services.dart';
 class UserProfile extends StatefulWidget {
   final User? user;
   final Function? callbackUser;
-  UserProfile({this.user, this.callbackUser});
+  UserProfile(this.user, this.callbackUser);
   @override
   UserProfileState createState() {
     return UserProfileState(user!, callbackUser);
@@ -20,8 +20,8 @@ class UserProfile extends StatefulWidget {
 }
 
 class UserProfileState extends State<UserProfile>
-    implements UserUpdateContract {
-  bool _isLoading = false;
+    implements UserUpdateContract, UserContract {
+  bool _isLoading = true;
   bool internetAccess = false;
   late CheckPlatform _checkPlatform;
 
@@ -29,6 +29,7 @@ class UserProfileState extends State<UserProfile>
   late ShowDialog showDialog;
   late ShowInternetStatus _showInternetStatus;
   late UserUpdatePresenter _userUpdatePresenter;
+  late UserPresenter _userPresenter;
 
   late String _name, _email, _mobile, _address, _city, _userId;
   var scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -62,9 +63,12 @@ class UserProfileState extends State<UserProfile>
     ]);
     showDialog = new ShowDialog();
     _userUpdatePresenter = new UserUpdatePresenter(this);
+    _userPresenter = new UserPresenter(this);
     _checkPlatform = new CheckPlatform(context: context);
     _showInternetStatus = new ShowInternetStatus();
     getInternetAccessObject();
+    getUserProfle();
+
     super.initState();
   }
 
@@ -84,15 +88,19 @@ class UserProfileState extends State<UserProfile>
 
   setUserVariables() {
     try {
-      _email = this.user.email;
-      _name = this.user.name;
-      _mobile = this.user.mobile;
-      _address = this.user.address;
-      _city = this.user.city;
-      _userId = this.user.userid;
+      _email = this.user.eMail!;
+      _name = this.user.userName!;
+      _mobile = this.user.mobileNo!;
+      _address = this.user.address!;
+      _city = this.user.city!;
+      _userId = this.user.userId!;
     } catch (e) {
       Navigator.of(context).pop();
     }
+  }
+
+  getUserProfle() async {
+    await _userPresenter.doGetUser(this.user.userId!);
   }
 
   void _showSnackBar(String text) {
@@ -100,25 +108,6 @@ class UserProfileState extends State<UserProfile>
         .scaffoldKey
         .currentState!
         .showSnackBar(new SnackBar(content: new Text(text)));
-  }
-
-  @override
-  void onUserUpdateError(String errorString) {
-    setState(() {
-      _isLoading = false;
-    });
-    this.showDialog.showDialogCustom(context, "Error", errorString);
-  }
-
-  @override
-  void onUserUpdateSuccess(User userDetails) {
-    this.callbackThis(userDetails);
-    setState(() {
-      _isLoading = false;
-    });
-    this
-        .showDialog
-        .showDialogCustom(context, "Success", "Profile Details Updated");
   }
 
   void _fieldFocusChange(
@@ -133,15 +122,15 @@ class UserProfileState extends State<UserProfile>
       var form = formKey.currentState;
       if (form!.validate()) {
         form.save();
-        if (this.user.name != _name ||
+        if (this.user.userName != _name ||
             this.user.city != _city ||
-            this.user.mobile != _mobile ||
+            this.user.mobileNo != _mobile ||
             this.user.address != _address) {
           setState(() {
             _isLoading = true;
           });
           await _userUpdatePresenter.doUpdateUser(
-              _userId, _email, _name, _address, _city, _mobile);
+              _userId, _name, _address, _city, _mobile);
         } else {
           this
               .showDialog
@@ -424,5 +413,41 @@ class UserProfileState extends State<UserProfile>
               onRefresh: getInternetAccessObject,
             ),
     );
+  }
+
+  @override
+  void onUserUpdateError(String errorString) {
+    setState(() {
+      _isLoading = false;
+    });
+    this.showDialog.showDialogCustom(context, "Error", errorString);
+  }
+
+  @override
+  void onUserUpdateSuccess(User userDetails) {
+    this.callbackThis(userDetails);
+    setState(() {
+      _isLoading = false;
+    });
+    this
+        .showDialog
+        .showDialogCustom(context, "Success", "Profile Details Updated");
+  }
+
+  @override
+  void onUserError() {
+    setState(() {
+      _isLoading = false;
+    });
+    this.showDialog.showDialogCustom(context, "Error", "Profile not found");
+  }
+
+  @override
+  void onUserSuccess(User userDetails) {
+    this.callbackThis(userDetails);
+    setState(() {
+      _isLoading = false;
+    });
+    this.showDialog.showDialogCustom(context, "Success", "Profile found");
   }
 }

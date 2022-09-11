@@ -102,8 +102,8 @@ class ShowUserState extends State<ShowUser> implements UserUpdateContract {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => UserProfile(
-                      user: this.user, callbackUser: this.callbackThis),
+                  builder: (context) =>
+                      UserProfile(this.user, this.callbackUser),
                 ),
               );
             },

@@ -27,7 +27,7 @@ class AuthStateProvider implements UserContract {
   }
 
   void initState() async {
-    bool isLoggedIn = false;
+    bool isLoggedIn = true;
     var user_id = "13-abdullah-1029384756";
     if (isLoggedIn) {
       if (internetAccess) {

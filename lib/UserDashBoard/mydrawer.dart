@@ -6,13 +6,13 @@ import 'sidebar_routes/goto_myrooms.dart';
 import 'sidebar_routes/goto_mydevices.dart';
 
 class MyDrawer extends StatefulWidget {
-  final User? user;
-  final Function? callbackUser;
-  const MyDrawer({Key? key, required this.user, this.callbackUser})
+  final User user;
+  final Function callbackUser;
+  const MyDrawer({Key? key, required this.user, required this.callbackUser})
       : super(key: key);
 
   @override
-  State<MyDrawer> createState() => _MyDrawerState(user!, callbackUser!);
+  State<MyDrawer> createState() => _MyDrawerState(user, callbackUser);
 }
 
 class _MyDrawerState extends State<MyDrawer> {
@@ -49,8 +49,8 @@ class _MyDrawerState extends State<MyDrawer> {
                   color: Colors.blue,
                 ),
                 margin: EdgeInsets.zero,
-                accountName: Text(widget.user!.name),
-                accountEmail: Text(widget.user!.email),
+                accountName: Text(widget.user.userName!),
+                accountEmail: Text(widget.user.eMail!),
                 currentAccountPicture: CircleAvatar(
                   backgroundColor: Colors.blue,
                   backgroundImage: AssetImage('assets/images/logo.png'),
@@ -87,7 +87,7 @@ class _MyDrawerState extends State<MyDrawer> {
                     MaterialPageRoute(
                       builder: (context) => ShowUser(
                         user: this.user,
-                        callbackUser: this.callbackThis,
+                        callbackUser: this.callbackUser,
                       ),
                     ),
                   );

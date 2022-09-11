@@ -15,7 +15,7 @@ class RestDatasource {
       print(res.toString());
       if (res["status"] == 0)
         throw new FormException(res["message"].toString());
-      return new User.map(res["user"]);
+      return new User.fromJson(res["user"]);
     });
   }
 
