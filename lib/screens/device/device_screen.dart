@@ -422,25 +422,9 @@ class _UserDevicesState extends State<UserDevices>
                 Expanded(
                   child: Row(
                     children: <Widget>[
-                      Expanded(
-                        child: Container(
-                          width: 10.0,
-                          height: 10.0,
-                          decoration: new BoxDecoration(
-                            shape: BoxShape.circle,
-                            color:
-                                info.active == "1" ? Colors.green : Colors.red,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: _changeState[device.deviceId!] == true
-                            ? 50.0
-                            : 20.0,
-                      ),
                       _changeState[device.deviceId!] == true
                           ? Container(
-                              padding: EdgeInsets.only(right: 15.0, left: 10.0),
+                              padding: EdgeInsets.only(right: 0.0, left: 35.0),
                               child: SizedBox(
                                 width: 10.0,
                                 height: 10.0,
@@ -453,30 +437,45 @@ class _UserDevicesState extends State<UserDevices>
                               ),
                             )
                           : Expanded(
-                              child: SizedBox(
-                                child: Switch(
-                                  focusColor: Colors.white,
-                                  hoverColor: Colors.black,
-                                  activeColor: Colors.green,
-                                  activeTrackColor: Colors.blue,
-                                  inactiveThumbColor: Colors.red,
-                                  inactiveTrackColor: Colors.yellow,
-                                  value: info.active == "1" ? true : false,
-                                  onChanged: (bool value) {
-                                    setState(() {
-                                      _changeState[device.deviceId!] = true;
-                                      info.active = value == true ? "1" : "0";
-                                    });
-                                    _powerDevice(
-                                        device.userId!,
-                                        device.deviceId!,
-                                        value == true ? "on" : "off");
-                                  },
-                                  autofocus: true,
-                                  splashRadius: 15.0,
+                              child: Container(
+                                width: 10.0,
+                                height: 10.0,
+                                decoration: new BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: info.active == "1"
+                                      ? Colors.green
+                                      : Colors.red,
                                 ),
                               ),
                             ),
+                      SizedBox(
+                        width: _changeState[device.deviceId!] == true
+                            ? 40.0
+                            : 20.0,
+                      ),
+                      Expanded(
+                        child: SizedBox(
+                          child: Switch(
+                            focusColor: Colors.white,
+                            hoverColor: Colors.black,
+                            activeColor: Colors.green,
+                            activeTrackColor: Colors.blue,
+                            inactiveThumbColor: Colors.red,
+                            inactiveTrackColor: Colors.yellow,
+                            value: info.active == "1" ? true : false,
+                            onChanged: (bool value) {
+                              setState(() {
+                                _changeState[device.deviceId!] = true;
+                                info.active = value == true ? "1" : "0";
+                              });
+                              _powerDevice(device.userId!, device.deviceId!,
+                                  value == true ? "on" : "off");
+                            },
+                            autofocus: true,
+                            splashRadius: 15.0,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
