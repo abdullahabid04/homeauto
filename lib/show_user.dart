@@ -85,13 +85,6 @@ class ShowUserState extends State<ShowUser> implements UserUpdateContract {
     }
   }
 
-  @override
-  void onUserUpdateSuccess(User user) {}
-  @override
-  void onUserUpdateError(String errorString) {
-    _showDialog.showDialogCustom(context, "Error", errorString);
-  }
-
   Widget _showBody(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
@@ -147,5 +140,19 @@ class ShowUserState extends State<ShowUser> implements UserUpdateContract {
       ),
       body: _isLoading ? ShowProgress() : _showBody(context),
     );
+  }
+
+  @override
+  void onPasswordUpdateError(String errorString) {}
+
+  @override
+  void onPasswordUpdateSuccess(String message) {}
+
+  @override
+  void onUserUpdateSuccess(User user) {}
+
+  @override
+  void onUserUpdateError(String errorString) {
+    _showDialog.showDialogCustom(context, "Error", errorString);
   }
 }

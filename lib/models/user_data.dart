@@ -1,5 +1,6 @@
 import '/utils/network_util.dart';
 import '/utils/custom_exception.dart';
+import '/utils/api_response.dart';
 
 class User {
   String? id;
@@ -82,7 +83,7 @@ class RequestUser {
     });
   }
 
-  Future<User> changePassword(
+  Future<ResponseDataAPI> changePassword(
       String email, String oldPassword, String newPassword) async {
     return _netUtil.post(changePasswordURL, body: {
       "user_id": email,
@@ -91,7 +92,7 @@ class RequestUser {
     }).then((dynamic res) {
       print(res.toString());
       if (res["status"] == 0) throw new FormException(res["message"]);
-      return User.fromJson(res['user']);
+      return ResponseDataAPI.fromJson(res);
     });
   }
 
@@ -138,6 +139,8 @@ class UserPresenter {
 abstract class UserUpdateContract {
   void onUserUpdateSuccess(User userDetails);
   void onUserUpdateError(String errorString);
+  void onPasswordUpdateSuccess(String message);
+  void onPasswordUpdateError(String errorString);
 }
 
 class UserUpdatePresenter {
@@ -161,14 +164,14 @@ class UserUpdatePresenter {
 
   doChangePassword(String email, String oldPassword, String newPassword) async {
     try {
-      User user = await api.changePassword(email, oldPassword, newPassword);
-      if (user == null) {
-        _view.onUserUpdateError("Update Failed");
+      var data = await api.changePassword(email, oldPassword, newPassword);
+      if (data == null) {
+        _view.onPasswordUpdateError("Update Failed");
       } else {
-        _view.onUserUpdateSuccess(user);
+        _view.onPasswordUpdateSuccess(data.message!);
       }
     } on Exception catch (error) {
-      _view.onUserUpdateError(error.toString());
+      _view.onPasswordUpdateError(error.toString());
     }
   }
 }

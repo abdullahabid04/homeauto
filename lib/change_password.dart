@@ -10,24 +10,27 @@ import '/utils/check_platform.dart';
 import 'package:flutter/cupertino.dart';
 
 class ChangePassword extends StatefulWidget {
-  final User? user;
-  final Function? callbackUser;
+  User? user;
+  Function? callbackUser;
   ChangePassword({this.user, this.callbackUser});
   @override
   ChangePasswordState createState() {
-    return ChangePasswordState(user!, callbackUser!);
+    return ChangePasswordState();
   }
 }
 
 class ChangePasswordState extends State<ChangePassword>
-    implements UserUpdateContract {
-  bool _isLoading = false;
+    implements UserUpdateContract, UserContract {
+  bool _isLoading = true;
   bool _isLoadingValue = false;
   bool internetAccess = false;
+  // bool _obscureText = true;
+  bool _obscureTextPass = true;
+  bool _obscureTextNewPass = true;
+  bool _obscureTextNewConPass = true;
+
   late CheckPlatform _checkPlatform;
 
-  late User user;
-  late Function callbackUser;
   late ShowDialog showDialog;
   late ShowInternetStatus _showInternetStatus;
   bool _isError = false;
@@ -37,22 +40,11 @@ class ChangePasswordState extends State<ChangePassword>
   FocusNode _newPasswordFocus = new FocusNode();
   FocusNode _newCPasswordFocus = new FocusNode();
   late UserUpdatePresenter _userUpdatePresenter;
+  late UserPresenter _userPresenter;
 
   var scaffoldKey = new GlobalKey<ScaffoldState>();
   var formKey = new GlobalKey<FormState>();
   bool _autoValidate = false;
-
-  callbackThis(User userDetails) {
-    this.callbackUser(userDetails);
-    setState(() {
-      this.user = userDetails;
-    });
-  }
-
-  ChangePasswordState(User user, Function callbackUser) {
-    this.user = user;
-    this.callbackUser = callbackUser;
-  }
 
   @override
   initState() {
@@ -61,10 +53,21 @@ class ChangePasswordState extends State<ChangePassword>
     ]);
     _showInternetStatus = new ShowInternetStatus();
     _userUpdatePresenter = new UserUpdatePresenter(this);
+    _userPresenter = new UserPresenter(this);
     _checkPlatform = new CheckPlatform(context: context);
-    getInternetAccessObject();
     showDialog = new ShowDialog();
+    getInternetAccessObject();
+    getUserProfile();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  getUserProfile() async {
+    await _userPresenter.doGetUser(widget.user!.userId!);
   }
 
   Future getInternetAccessObject() async {
@@ -75,30 +78,13 @@ class ChangePasswordState extends State<ChangePassword>
     });
   }
 
-  @override
-  void onUserUpdateError(String errorString) {
-    setState(() {
-      _isLoadingValue = false;
-    });
-    this.showDialog.showDialogCustom(context, "Error", errorString);
-  }
-
-  @override
-  void onUserUpdateSuccess(User userDetails) {
-    this.callbackThis(userDetails);
-    setState(() {
-      _isLoadingValue = false;
-    });
-    this.showDialog.showDialogCustom(context, "Success", "Password Changed");
-  }
-
   void _fieldFocusChange(
       BuildContext context, FocusNode current, FocusNode next) {
     current.unfocus();
     FocusScope.of(context).requestFocus(next);
   }
 
-  Future _changePassword() async {
+  _changePassword() async {
     await getInternetAccessObject();
     if (internetAccess) {
       var form = formKey.currentState;
@@ -110,7 +96,7 @@ class ChangePasswordState extends State<ChangePassword>
             _isLoadingValue = true;
           });
           await _userUpdatePresenter.doChangePassword(
-              this.user.userId!, _oldPassword, _newPassword);
+              widget.user!.userId!, _oldPassword, _newPassword);
           form.reset();
         } else {
           this._isError = true;
@@ -127,6 +113,16 @@ class ChangePasswordState extends State<ChangePassword>
   }
 
   String? passwordValidator(String? value) {
+    Pattern pattern =
+        r'^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})';
+    RegExp regex = new RegExp(pattern.toString());
+    if (!regex.hasMatch(value!))
+      return 'Enter valid password';
+    else
+      return null;
+  }
+
+  String? newPasswordValidator(String? value) {
     Pattern pattern =
         r'^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})';
     RegExp regex = new RegExp(pattern.toString());
@@ -165,6 +161,21 @@ class ChangePasswordState extends State<ChangePassword>
                   ),
                   TextFormField(
                     decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.lock_open,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          // Based on passwordVisible state choose the icon
+                          _obscureTextPass
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Theme.of(context).primaryColorDark,
+                        ),
+                        onPressed: () => setState(() {
+                          _obscureTextPass = !_obscureTextPass;
+                        }),
+                      ),
                       hintText: "Old Password",
                       contentPadding:
                           EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 10.0),
@@ -175,7 +186,7 @@ class ChangePasswordState extends State<ChangePassword>
                     onSaved: (value) {
                       _oldPassword = value!;
                     },
-                    obscureText: true,
+                    obscureText: _obscureTextPass,
                     validator: oldPasswordValidator,
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.next,
@@ -190,6 +201,21 @@ class ChangePasswordState extends State<ChangePassword>
                   ),
                   TextFormField(
                     decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.lock_open,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          // Based on passwordVisible state choose the icon
+                          _obscureTextNewPass
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Theme.of(context).primaryColorDark,
+                        ),
+                        onPressed: () => setState(() {
+                          _obscureTextNewPass = !_obscureTextNewPass;
+                        }),
+                      ),
                       hintText: "New Password",
                       contentPadding:
                           EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 10.0),
@@ -202,7 +228,7 @@ class ChangePasswordState extends State<ChangePassword>
                     },
                     validator: passwordValidator,
                     keyboardType: TextInputType.text,
-                    obscureText: true,
+                    obscureText: _obscureTextNewPass,
                     textInputAction: TextInputAction.next,
                     focusNode: _newPasswordFocus,
                     onFieldSubmitted: (value) {
@@ -215,6 +241,21 @@ class ChangePasswordState extends State<ChangePassword>
                   ),
                   TextFormField(
                     decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.lock_open,
+                      ),
+                      suffixIcon: IconButton(
+                          icon: Icon(
+                            // Based on passwordVisible state choose the icon
+                            _obscureTextNewConPass
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Theme.of(context).primaryColorDark,
+                          ),
+                          onPressed: () => setState(() {
+                                _obscureTextNewConPass =
+                                    !_obscureTextNewConPass;
+                              })),
                       hintText: "Confirm New Password",
                       contentPadding:
                           EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 10.0),
@@ -225,8 +266,8 @@ class ChangePasswordState extends State<ChangePassword>
                     onSaved: (value) {
                       _newCPassword = value!;
                     },
-                    validator: passwordValidator,
-                    obscureText: true,
+                    validator: newPasswordValidator,
+                    obscureText: _obscureTextNewConPass,
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.next,
                     focusNode: _newCPasswordFocus,
@@ -292,12 +333,54 @@ class ChangePasswordState extends State<ChangePassword>
       body: internetAccess
           ? _isLoading
               ? ShowProgress()
-              : _showBody(context)
+              : RefreshIndicator(
+                  child: _showBody(context),
+                  onRefresh: () => getUserProfile(),
+                )
           : RefreshIndicator(
               child: _showInternetStatus
                   .showInternetStatus(_checkPlatform.isIOS()),
               onRefresh: getInternetAccessObject,
             ),
     );
+  }
+
+  @override
+  void onUserUpdateError(String errorString) {}
+
+  @override
+  void onUserUpdateSuccess(User userDetails) {}
+
+  @override
+  void onUserError() {
+    setState(() {
+      _isLoading = false;
+    });
+    this.showDialog.showDialogCustom(context, "Error", "Profile not found");
+  }
+
+  @override
+  void onUserSuccess(User userDetails) {
+    setState(() {
+      widget.user = userDetails;
+      _isLoading = false;
+    });
+    this.showDialog.showDialogCustom(context, "Success", "Profile Found");
+  }
+
+  @override
+  void onPasswordUpdateError(String errorString) {
+    setState(() {
+      _isLoadingValue = false;
+    });
+    this.showDialog.showDialogCustom(context, "Error", errorString);
+  }
+
+  @override
+  void onPasswordUpdateSuccess(String message) {
+    setState(() {
+      _isLoadingValue = false;
+    });
+    this.showDialog.showDialogCustom(context, "Success", "Password Changed");
   }
 }

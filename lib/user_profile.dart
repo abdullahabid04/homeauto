@@ -10,12 +10,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 class UserProfile extends StatefulWidget {
-  final User? user;
-  final Function? callbackUser;
+  User? user;
+  Function? callbackUser;
   UserProfile(this.user, this.callbackUser);
   @override
   UserProfileState createState() {
-    return UserProfileState(user!, callbackUser);
+    return UserProfileState();
   }
 }
 
@@ -25,7 +25,6 @@ class UserProfileState extends State<UserProfile>
   bool internetAccess = false;
   late CheckPlatform _checkPlatform;
 
-  late User user;
   late ShowDialog showDialog;
   late ShowInternetStatus _showInternetStatus;
   late UserUpdatePresenter _userUpdatePresenter;
@@ -41,21 +40,6 @@ class UserProfileState extends State<UserProfile>
   final FocusNode _cityFocus = new FocusNode();
   final FocusNode _mobileFocus = new FocusNode();
 
-  late Function callbackUser;
-
-  callbackThis(User userDetails) {
-    this.callbackUser(userDetails);
-    setState(() {
-      this.user = userDetails;
-    });
-  }
-
-  UserProfileState(User user, callbackUser) {
-    this.user = user;
-    this.callbackUser = callbackUser;
-    setUserVariables();
-  }
-
   @override
   initState() {
     SystemChrome.setPreferredOrientations([
@@ -68,7 +52,7 @@ class UserProfileState extends State<UserProfile>
     _showInternetStatus = new ShowInternetStatus();
     getInternetAccessObject();
     getUserProfle();
-
+    setUserVariables(widget.user);
     super.initState();
   }
 
@@ -86,21 +70,21 @@ class UserProfileState extends State<UserProfile>
     });
   }
 
-  setUserVariables() {
+  setUserVariables(User? user) {
     try {
-      _email = this.user.eMail!;
-      _name = this.user.userName!;
-      _mobile = this.user.mobileNo!;
-      _address = this.user.address!;
-      _city = this.user.city!;
-      _userId = this.user.userId!;
+      _email = user!.eMail!;
+      _name = user.userName!;
+      _mobile = user.mobileNo!;
+      _address = user.address!;
+      _city = user.city!;
+      _userId = user.userId!;
     } catch (e) {
       Navigator.of(context).pop();
     }
   }
 
   getUserProfle() async {
-    await _userPresenter.doGetUser(this.user.userId!);
+    await _userPresenter.doGetUser(widget.user!.userId!);
   }
 
   void _showSnackBar(String text) {
@@ -116,16 +100,16 @@ class UserProfileState extends State<UserProfile>
     FocusScope.of(context).requestFocus(next);
   }
 
-  Future _updateUserProfile() async {
+  Future _updateUserProfile(User? user) async {
     await getInternetAccessObject();
     if (internetAccess) {
       var form = formKey.currentState;
       if (form!.validate()) {
         form.save();
-        if (this.user.userName != _name ||
-            this.user.city != _city ||
-            this.user.mobileNo != _mobile ||
-            this.user.address != _address) {
+        if (user!.userName != _name ||
+            user.city != _city ||
+            user.mobileNo != _mobile ||
+            user.address != _address) {
           setState(() {
             _isLoading = true;
           });
@@ -346,7 +330,7 @@ class UserProfileState extends State<UserProfile>
                               focusNode: _mobileFocus,
                               onFieldSubmitted: (val) async {
                                 _mobileFocus.unfocus();
-                                await _updateUserProfile();
+                                await _updateUserProfile(widget.user);
                               },
                               decoration: InputDecoration(
                                 hintText: "Mobile",
@@ -367,7 +351,7 @@ class UserProfileState extends State<UserProfile>
                             RaisedButton(
                               color: kHAutoBlue300,
                               onPressed: () async {
-                                await _updateUserProfile();
+                                await _updateUserProfile(widget.user);
                               },
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(24),
@@ -425,8 +409,9 @@ class UserProfileState extends State<UserProfile>
 
   @override
   void onUserUpdateSuccess(User userDetails) {
-    this.callbackThis(userDetails);
+    setUserVariables(userDetails);
     setState(() {
+      widget.user = userDetails;
       _isLoading = false;
     });
     this
@@ -444,10 +429,17 @@ class UserProfileState extends State<UserProfile>
 
   @override
   void onUserSuccess(User userDetails) {
-    this.callbackThis(userDetails);
+    setUserVariables(userDetails);
     setState(() {
+      widget.user = userDetails;
       _isLoading = false;
     });
     this.showDialog.showDialogCustom(context, "Success", "Profile found");
   }
+
+  @override
+  void onPasswordUpdateError(String errorString) {}
+
+  @override
+  void onPasswordUpdateSuccess(String message) {}
 }

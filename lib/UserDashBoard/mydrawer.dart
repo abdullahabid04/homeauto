@@ -94,11 +94,11 @@ class _MyDrawerState extends State<MyDrawer> {
                 }),
             ListTile(
                 leading: const Icon(Icons.share),
-                title: const Text('Share my devices'),
+                title: const Text('Shared devices'),
                 onTap: () {}),
             ListTile(
                 leading: const Icon(Icons.person),
-                title: const Text('Profile'),
+                title: const Text('Shared Members'),
                 onTap: () {}),
             ListTile(
                 leading: const Icon(Icons.call),
