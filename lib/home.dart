@@ -4,7 +4,7 @@ import '/utils/show_progress.dart';
 import '/utils/check_platform.dart';
 import '/utils/show_internet_status.dart';
 import '/models/user_data.dart';
-import '/get_to_user_profile.dart';
+import '/profile/get_to_user_profile.dart';
 import 'screens/device/device_screen.dart';
 import 'package:flutter/services.dart';
 import '/UserDashBoard/mydrawer.dart';

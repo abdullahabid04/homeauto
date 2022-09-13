@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:flutter/cupertino.dart';
-import '/colors.dart';
+import '../constants/colors.dart';
 import '/utils/show_progress.dart';
 import '/login_signup/signup_screen_presenter.dart';
 import '/utils/show_dialog.dart';

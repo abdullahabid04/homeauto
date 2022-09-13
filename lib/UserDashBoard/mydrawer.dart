@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import '../models/user_data.dart';
-import '../show_user.dart';
+import '/profile/show_user.dart';
 import 'sidebar_routes/goto_myhomes.dart';
 import 'sidebar_routes/goto_myrooms.dart';
 import 'sidebar_routes/goto_mydevices.dart';
+import 'sidebar_routes/contact_us.dart';
+import 'sidebar_routes/referral_program.dart';
 
 class MyDrawer extends StatefulWidget {
   final User user;
@@ -103,11 +105,31 @@ class _MyDrawerState extends State<MyDrawer> {
             ListTile(
                 leading: const Icon(Icons.call),
                 title: const Text('Contact us'),
-                onTap: () {}),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Contact(
+                        user: this.user,
+                        callbackUser: this.callbackUser,
+                      ),
+                    ),
+                  );
+                }),
             ListTile(
                 leading: const Icon(Icons.groups),
                 title: const Text('Referral Program'),
-                onTap: () {}),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ReferProgram(
+                        user: this.user,
+                        callbackUser: this.callbackUser,
+                      ),
+                    ),
+                  );
+                }),
             ListTile(
                 leading: const Icon(Icons.logout),
                 title: const Text('Log Out'),

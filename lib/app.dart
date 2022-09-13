@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '/home.dart';
-import '/colors.dart';
+import 'constants/colors.dart';
 import '/login_signup/login.dart';
 import '/login_signup/signup.dart';
 import '/screens/splashscreen/splash_screen.dart';

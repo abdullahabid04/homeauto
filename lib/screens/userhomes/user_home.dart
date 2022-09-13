@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:last_home_auto/utils/api_response.dart';
-import '../../colors.dart';
+import '../../constants/colors.dart';
 import '../../models/home_data.dart';
-import '/colors.dart';
+import '../../constants/colors.dart';
 import 'package:flutter/services.dart';
 import '../../utils/internet_access.dart';
 import '../../utils/show_dialog.dart';

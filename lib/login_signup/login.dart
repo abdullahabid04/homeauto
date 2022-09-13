@@ -3,7 +3,7 @@ import '/auth.dart';
 import '/models/user_data.dart';
 import '/login_signup/login_screen_presenter.dart';
 import 'dart:ui';
-import '/colors.dart';
+import '../constants/colors.dart';
 import '/utils/internet_access.dart';
 import '/utils/show_progress.dart';
 import '/home.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '/colors.dart';
+import '../constants/colors.dart';
 import '/models/user_data.dart';
 import '/utils/show_progress.dart';
 import '/utils/internet_access.dart';

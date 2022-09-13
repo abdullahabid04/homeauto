@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '/show_user.dart';
+import '/profile/show_user.dart';
 import '/models/user_data.dart';
 
 class GoToUserProfile {

@@ -3,12 +3,12 @@ import '/models/user_data.dart';
 import '/login_signup/logout.dart';
 import '/utils/show_dialog.dart';
 import 'package:flutter/cupertino.dart';
-import '/colors.dart';
+import '../constants/colors.dart';
 import 'package:flutter/services.dart';
 import '/utils/internet_access.dart';
-import '/user_profile.dart';
+import '/profile/user_profile.dart';
 import '/utils/check_platform.dart';
-import '/change_password.dart';
+import 'change_password.dart';
 import 'package:share/share.dart';
 import '/utils/show_progress.dart';
 
