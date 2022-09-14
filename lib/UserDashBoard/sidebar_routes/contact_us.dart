@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:last_home_auto/utils/show_progress.dart';
 import '../../models/user_data.dart';
+import '../../utils/show_dialog.dart';
+import '/models/company_data.dart';
 
 class Contact extends StatefulWidget {
   final User? user;
@@ -11,9 +14,39 @@ class Contact extends StatefulWidget {
   State<Contact> createState() => _ContactState();
 }
 
-class _ContactState extends State<Contact> {
-  final message = TextEditingController();
+class _ContactState extends State<Contact> implements CompanyDataContract {
+  bool _isLoading = true;
   late String mobile_no;
+  late String complain;
+  late CompanyDataPresenter _presenter;
+  List<Contactor> _contactors = <Contactor>[];
+  final message = TextEditingController();
+  late ShowDialog _showDialog;
+
+  @override
+  void initState() {
+    _presenter = new CompanyDataPresenter(this);
+    _showDialog = new ShowDialog();
+    _getContacts();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  _getContacts() async {
+    await _presenter.doGetContacts();
+  }
+
+  _makeCall(contact) async {
+    await FlutterPhoneDirectCaller.callNumber(contact);
+  }
+
+  _sendMessage(String user_id, String _complain) async {
+    await _presenter.doSendComplaint(user_id, _complain);
+  }
 
   void showCustomDialog(BuildContext context) {
     showGeneralDialog(
@@ -39,8 +72,9 @@ class _ContactState extends State<Contact> {
                   Padding(
                     padding: EdgeInsets.all(25),
                     child: Expanded(
-                      child: TextField(
+                      child: TextFormField(
                         controller: message,
+                        onSaved: (val) => complain = val!,
                         maxLines: 5,
                         minLines: 5,
                         autocorrect: true,
@@ -68,12 +102,17 @@ class _ContactState extends State<Contact> {
                         Padding(
                           padding: EdgeInsets.all(10),
                           child: TextButton(
-                              onPressed: () {}, child: Text("cancel")),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text("cancel")),
                         ),
                         Padding(
                           padding: EdgeInsets.all(10),
-                          child:
-                              TextButton(onPressed: () {}, child: Text("send")),
+                          child: TextButton(
+                              onPressed: () =>
+                                  _sendMessage(widget.user!.userId!, complain),
+                              child: Text("send")),
                         ),
                       ],
                     ),
@@ -107,38 +146,70 @@ class _ContactState extends State<Contact> {
   }
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    return Container(
-      alignment: Alignment.bottomCenter,
-      child: Padding(
-        padding: EdgeInsets.only(left: 20, right: 20, bottom: 50),
-        child: Row(children: [
-          Expanded(
-              child: ElevatedButton(
-                  onPressed: () async {
-                    await FlutterPhoneDirectCaller.callNumber(mobile_no);
-                  },
-                  child: Text("Call"))),
-          Padding(padding: EdgeInsets.symmetric(horizontal: 10)),
-          Expanded(
-              child: ElevatedButton(
-                  onPressed: () {
-                    showCustomDialog(context);
-                  },
-                  child: Text("Message"))),
-        ]),
+    return Scaffold(
+        appBar: AppBar(
+          title: Text("Contact us"),
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.message),
+            onPressed: () => showCustomDialog(context),
+          ),
+        ),
+        body:
+            _isLoading ? ShowProgress() : createListView(context, _contactors));
+  }
+
+  Widget _contactWidget(BuildContext context, Contactor contactor) {
+    return Card(
+        child: ListTile(
+      title: Text(contactor.contactorName!),
+      subtitle: Text(contactor.contactorRole!),
+      trailing: Icon(Icons.contact_phone),
+      leading: IconButton(
+        icon: Icon(Icons.call),
+        onPressed: () => _makeCall(contactor.contactorMobile),
       ),
+    ));
+  }
+
+  Widget createListView(BuildContext context, List<Contactor> contactList) {
+    return new GridView.count(
+      crossAxisCount: 2,
+      children:
+          contactList.map((value) => _contactWidget(context, value)).toList(),
     );
+  }
+
+  @override
+  void onCompanyGetContactsError(String error) {
+    setState(() {
+      _isLoading = false;
+    });
+    _showDialog.showDialogCustom(context, "Error", error);
+  }
+
+  @override
+  void onCompanyGetContactsSuccess(List<Contactor>? contactors) {
+    setState(() {
+      _contactors = contactors!;
+      _isLoading = false;
+    });
+  }
+
+  @override
+  void onCompanySendComplaintError(String error) {
+    setState(() {
+      _isLoading = false;
+    });
+    _showDialog.showDialogCustom(context, "Error", error);
+  }
+
+  @override
+  void onCompanySendComplaintSuccess(String message) {
+    setState(() {
+      _isLoading = false;
+    });
+    _showDialog.showDialogCustom(context, "success", message);
   }
 }
