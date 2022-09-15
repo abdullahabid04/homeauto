@@ -110,8 +110,12 @@ class _ContactState extends State<Contact> implements CompanyDataContract {
                         Padding(
                           padding: EdgeInsets.all(10),
                           child: TextButton(
-                              onPressed: () =>
-                                  _sendMessage(widget.user!.userId!, complain),
+                              onPressed: () {
+                                setState(() {
+                                  _isLoading = true;
+                                });
+                                _sendMessage(widget.user!.userId!, complain);
+                              },
                               child: Text("send")),
                         ),
                       ],
