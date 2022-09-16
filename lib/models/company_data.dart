@@ -79,11 +79,9 @@ class RequestCompany {
   }
 
   Future<ResponseDataAPI> sendComplaint(
-      String mobile_no, String complaint) async {
-    return _netUtil.post(sendComplaintURL, body: {
-      "mobile_no": mobile_no,
-      "complaint": complaint
-    }).then((dynamic res) {
+      String user_id, String complaint) async {
+    return _netUtil.post(sendComplaintURL,
+        body: {"user_id": user_id, "complain": complaint}).then((dynamic res) {
       print(res.toString());
       if (res["status"] == 0) throw new FormException(res["message"]);
       return ResponseDataAPI.fromJson(res);
@@ -116,9 +114,9 @@ class CompanyDataPresenter {
     }
   }
 
-  doSendComplaint(String? mobile_no, String? complaint) async {
+  doSendComplaint(String? user_id, String? complaint) async {
     try {
-      ResponseDataAPI data = await api.sendComplaint(mobile_no!, complaint!);
+      ResponseDataAPI data = await api.sendComplaint(user_id!, complaint!);
       if (data == null) {
         _view.onCompanySendComplaintError("Update Failed");
       } else {

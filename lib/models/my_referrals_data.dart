@@ -81,7 +81,7 @@ class ReferralsData {
 
   Future<ResponseDataAPI> addReferrals(
       String user_id, String referral_name, String referral_mobile) async {
-    return _netUtil.post(getReferralsURL, body: {
+    return _netUtil.post(addReferralsURL, body: {
       "user_id": user_id,
       "referral_name": referral_name,
       "referral_mobile": referral_mobile
@@ -118,7 +118,7 @@ class ReferralProgramPresetner {
     }
   }
 
-  doGetDevices(
+  doAddReferral(
       String user_id, String referral_name, String referral_mobile) async {
     try {
       ResponseDataAPI _response =
