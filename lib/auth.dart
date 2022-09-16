@@ -58,7 +58,7 @@ class AuthStateProvider implements UserContract {
   }
 
   @override
-  void onUserError() {
+  void onUserError(String? error) {
     notify(AuthState.LOGGED_OUT, null);
   }
 

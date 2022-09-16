@@ -352,7 +352,7 @@ class ChangePasswordState extends State<ChangePassword>
   void onUserUpdateSuccess(User userDetails) {}
 
   @override
-  void onUserError() {
+  void onUserError(String? error) {
     setState(() {
       _isLoading = false;
     });

@@ -1,37 +1,41 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import '../constants/colors.dart';
+import 'package:flutter/services.dart';
+import '../../constants/colors.dart';
+import '/profile/widget/button_widget.dart';
+import '/profile/widget/profile_widget.dart';
+import '/profile/widget/textfield_widget.dart';
 import '/models/user_data.dart';
 import '/utils/show_progress.dart';
 import '/utils/internet_access.dart';
 import '/utils/show_dialog.dart';
 import '/utils/show_internet_status.dart';
 import '/utils/check_platform.dart';
-import 'package:flutter/services.dart';
 
-class UserProfile extends StatefulWidget {
+class EditProfilePage extends StatefulWidget {
   User? user;
   Function? callbackUser;
-  UserProfile(this.user, this.callbackUser);
+  EditProfilePage({this.user, this.callbackUser});
   @override
-  UserProfileState createState() {
-    return UserProfileState();
-  }
+  _EditProfilePageState createState() => _EditProfilePageState();
 }
 
-class UserProfileState extends State<UserProfile>
-    implements UserUpdateContract, UserContract {
+class _EditProfilePageState extends State<EditProfilePage>
+    implements UserContract, UserUpdateContract {
   bool _isLoading = true;
   bool internetAccess = false;
-  late CheckPlatform _checkPlatform;
+  late User? user;
 
   late ShowDialog showDialog;
   late ShowInternetStatus _showInternetStatus;
-  late UserUpdatePresenter _userUpdatePresenter;
+
   late UserPresenter _userPresenter;
+  late UserUpdatePresenter _userUpdatePresenter;
 
   late String _name, _email, _mobile, _address, _city, _userId;
+
   var scaffoldKey = new GlobalKey<ScaffoldState>();
-  var formKey = new GlobalKey<FormState>();
+  var editProfileFormKey = new GlobalKey<FormState>();
   bool _autoValidate = false;
 
   final FocusNode _nameFocus = new FocusNode();
@@ -45,33 +49,23 @@ class UserProfileState extends State<UserProfile>
       DeviceOrientation.portraitUp,
     ]);
     showDialog = new ShowDialog();
-    _userUpdatePresenter = new UserUpdatePresenter(this);
     _userPresenter = new UserPresenter(this);
-    _checkPlatform = new CheckPlatform(context: context);
+    _userUpdatePresenter = new UserUpdatePresenter(this);
     _showInternetStatus = new ShowInternetStatus();
     getInternetAccessObject();
-    getUserProfle();
-    setUserVariables(widget.user);
+    getUserProfile();
+    setUserVariables(widget.user!);
     super.initState();
   }
 
   @override
   void dispose() {
-    SystemChannels.textInput.invokeMethod('TextInput.hide');
     super.dispose();
   }
 
-  Future getInternetAccessObject() async {
-    CheckInternetAccess checkInternetAccess = new CheckInternetAccess();
-    bool internetAccessDummy = await checkInternetAccess.check();
-    setState(() {
-      internetAccess = internetAccessDummy;
-    });
-  }
-
-  setUserVariables(User? user) {
+  setUserVariables(User user) {
     try {
-      _email = user!.eMail!;
+      _email = user.eMail!;
       _name = user.userName!;
       _mobile = user.mobileNo!;
       _address = user.address!;
@@ -82,8 +76,12 @@ class UserProfileState extends State<UserProfile>
     }
   }
 
-  getUserProfle() async {
-    await _userPresenter.doGetUser(widget.user!.userId!);
+  Future getInternetAccessObject() async {
+    CheckInternetAccess checkInternetAccess = new CheckInternetAccess();
+    bool internetAccessDummy = await checkInternetAccess.check();
+    setState(() {
+      internetAccess = internetAccessDummy;
+    });
   }
 
   void _showSnackBar(String text) {
@@ -93,16 +91,14 @@ class UserProfileState extends State<UserProfile>
         .showSnackBar(new SnackBar(content: new Text(text)));
   }
 
-  void _fieldFocusChange(
-      BuildContext context, FocusNode current, FocusNode next) {
-    current.unfocus();
-    FocusScope.of(context).requestFocus(next);
+  getUserProfile() async {
+    await _userPresenter.doGetUser(widget.user!.userId!);
   }
 
   Future _updateUserProfile(User? user) async {
     await getInternetAccessObject();
     if (internetAccess) {
-      var form = formKey.currentState;
+      var form = editProfileFormKey.currentState;
       if (form!.validate()) {
         form.save();
         if (user!.userName != _name ||
@@ -129,63 +125,69 @@ class UserProfileState extends State<UserProfile>
     }
   }
 
-  Widget _showBody(BuildContext context) {
-    String? cityValidator(String? value) {
-      Pattern pattern = r'^[a-zA-Z]+$';
-      RegExp regex = new RegExp(pattern.toString());
-      if (value!.isEmpty)
-        return 'City should not be empty';
-      else if (!regex.hasMatch(value))
-        return 'City should not contain special characters';
-      else if (value.length <= 2)
-        return "City should have more than 2 characters";
-      else
-        return null;
-    }
+  void _fieldFocusChange(
+      BuildContext context, FocusNode current, FocusNode next) {
+    current.unfocus();
+    FocusScope.of(context).requestFocus(next);
+  }
 
-    String? contactValidator(String? value) {
-      Pattern pattern = r'^[0-9]{10}$';
-      RegExp regex = new RegExp(pattern.toString());
-      if (value!.isEmpty)
-        return 'Contact should not be empty';
-      else if (!regex.hasMatch(value))
-        return 'Contact should only 10 contain numbers';
-      else
-        return null;
-    }
+  String? cityValidator(String? value) {
+    Pattern pattern = r'^[a-zA-Z]+$';
+    RegExp regex = new RegExp(pattern.toString());
+    if (value!.isEmpty)
+      return 'City should not be empty';
+    else if (!regex.hasMatch(value))
+      return 'City should not contain special characters';
+    else if (value.length <= 2)
+      return "City should have more than 2 characters";
+    else
+      return null;
+  }
 
-    String? nameValidator(String? value) {
-      Pattern pattern = r'^[a-zA-Z0-9]+$';
-      Pattern pattern2 = r'^([0-9])+[a-zA-Z0-9]+$';
-      RegExp regex = new RegExp(pattern.toString());
-      RegExp regex2 = new RegExp(pattern2.toString());
-      if (value!.isEmpty)
-        return 'Name should not be empty';
-      else if (!regex.hasMatch(value))
-        return 'Name should not contain special character';
-      else if (regex2.hasMatch(value))
-        return 'Name should not start with alpanumerics';
-      else if (value.length <= 3)
-        return "Name should have more than 3 characters";
-      else
-        return null;
-    }
+  String? contactValidator(String? value) {
+    Pattern pattern = r'^[0-9]{10}$';
+    RegExp regex = new RegExp(pattern.toString());
+    if (value!.isEmpty)
+      return 'Contact should not be empty';
+    else if (!regex.hasMatch(value))
+      return 'Contact should only 10 contain numbers';
+    else
+      return null;
+  }
 
-    String? addressValidator(String? value) {
-      Pattern pattern = r'^[0-9a-zA-Z,/. ]+$';
-      RegExp regex = new RegExp(pattern.toString());
-      if (value!.isEmpty)
-        return 'Address should not be empty';
-      else if (!regex.hasMatch(value))
-        return 'Address should have only [,/. ] special characters';
-      else if (value.length <= 8)
-        return "Address should have more than 8 characters";
-      else
-        return null;
-    }
+  String? nameValidator(String? value) {
+    Pattern pattern = r'^[a-zA-Z0-9]+$';
+    Pattern pattern2 = r'^([0-9])+[a-zA-Z0-9]+$';
+    RegExp regex = new RegExp(pattern.toString());
+    RegExp regex2 = new RegExp(pattern2.toString());
+    if (value!.isEmpty)
+      return 'Name should not be empty';
+    else if (!regex.hasMatch(value))
+      return 'Name should not contain special character';
+    else if (regex2.hasMatch(value))
+      return 'Name should not start with alpanumerics';
+    else if (value.length <= 3)
+      return "Name should have more than 3 characters";
+    else
+      return null;
+  }
 
+  String? addressValidator(String? value) {
+    Pattern pattern = r'^[0-9a-zA-Z,/. ]+$';
+    RegExp regex = new RegExp(pattern.toString());
+    if (value!.isEmpty)
+      return 'Address should not be empty';
+    else if (!regex.hasMatch(value))
+      return 'Address should have only [,/. ] special characters';
+    else if (value.length <= 8)
+      return "Address should have more than 8 characters";
+    else
+      return null;
+  }
+
+  Widget _buldEditProfileForm(BuildContext context) {
     return Container(
-      child: ListView(
+      child: Column(
         children: <Widget>[
           SizedBox(
             height: 10.0,
@@ -203,7 +205,7 @@ class UserProfileState extends State<UserProfile>
                     child: Container(
                       padding: EdgeInsets.all(10.0),
                       child: Form(
-                        key: formKey,
+                        key: editProfileFormKey,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -329,7 +331,6 @@ class UserProfileState extends State<UserProfile>
                               focusNode: _mobileFocus,
                               onFieldSubmitted: (val) async {
                                 _mobileFocus.unfocus();
-                                await _updateUserProfile(widget.user);
                               },
                               decoration: InputDecoration(
                                 hintText: "Mobile",
@@ -350,7 +351,7 @@ class UserProfileState extends State<UserProfile>
                             RaisedButton(
                               color: kHAutoBlue300,
                               onPressed: () async {
-                                await _updateUserProfile(widget.user);
+                                await _updateUserProfile(user);
                               },
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(24),
@@ -379,43 +380,43 @@ class UserProfileState extends State<UserProfile>
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      key: scaffoldKey,
-      appBar: new AppBar(
-        title: new Text("Edit Profile"),
+  Widget _createBody(BuildContext context) {
+    return Container(
+      child: ListView(
+        padding: EdgeInsets.symmetric(horizontal: 32),
+        physics: BouncingScrollPhysics(),
+        children: [
+          ProfileWidget(
+            imagePath:
+                "https://digitalsynopsis.com/wp-content/uploads/2014/06/supercar-wallpapers-bugatti-3.jpg",
+            isEdit: true,
+            onClicked: () async {},
+          ),
+          _buldEditProfileForm(context),
+        ],
       ),
-      body: internetAccess
-          ? _isLoading
-              ? ShowProgress()
-              : _showBody(context)
-          : RefreshIndicator(
-              child: _showInternetStatus
-                  .showInternetStatus(_checkPlatform.isIOS()),
-              onRefresh: getInternetAccessObject,
-            ),
     );
   }
 
   @override
-  void onUserUpdateError(String errorString) {
+  Widget build(BuildContext context) => Scaffold(
+      appBar: AppBar(),
+      body: _isLoading ? ShowProgress() : _createBody(context));
+
+  @override
+  void onPasswordUpdateError(String errorString) {
     setState(() {
       _isLoading = false;
     });
-    this.showDialog.showDialogCustom(context, "Error", errorString);
+    showDialog.showDialogCustom(context, "Error", errorString);
   }
 
   @override
-  void onUserUpdateSuccess(User userDetails) {
-    setUserVariables(userDetails);
+  void onPasswordUpdateSuccess(String message) {
     setState(() {
-      widget.user = userDetails;
       _isLoading = false;
     });
-    this
-        .showDialog
-        .showDialogCustom(context, "Success", "Profile Details Updated");
+    showDialog.showDialogCustom(context, "Success", message);
   }
 
   @override
@@ -423,22 +424,36 @@ class UserProfileState extends State<UserProfile>
     setState(() {
       _isLoading = false;
     });
-    this.showDialog.showDialogCustom(context, "Error", "Profile not found");
+    showDialog.showDialogCustom(context, "Error", "content");
   }
 
   @override
   void onUserSuccess(User userDetails) {
     setUserVariables(userDetails);
     setState(() {
-      widget.user = userDetails;
+      user = userDetails;
       _isLoading = false;
     });
-    this.showDialog.showDialogCustom(context, "Success", "Profile found");
+    showDialog.showDialogCustom(
+        context, "Success", "User fetched Successfully");
   }
 
   @override
-  void onPasswordUpdateError(String errorString) {}
+  void onUserUpdateError(String errorString) {
+    setState(() {
+      _isLoading = false;
+    });
+    showDialog.showDialogCustom(context, "Error", errorString);
+  }
 
   @override
-  void onPasswordUpdateSuccess(String message) {}
+  void onUserUpdateSuccess(User userDetails) {
+    setUserVariables(userDetails);
+    setState(() {
+      user = userDetails;
+      _isLoading = false;
+    });
+    showDialog.showDialogCustom(
+        context, "Success", "User updated successfully");
+  }
 }

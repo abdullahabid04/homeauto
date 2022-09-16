@@ -113,7 +113,7 @@ class RequestUser {
 
 abstract class UserContract {
   void onUserSuccess(User userDetails);
-  void onUserError();
+  void onUserError(String? error);
 }
 
 class UserPresenter {
@@ -125,13 +125,13 @@ class UserPresenter {
     try {
       var user = await api.getUserDetails(userEmail);
       if (user == null) {
-        _view.onUserError();
+        _view.onUserError("User not found");
       } else {
         _view.onUserSuccess(user);
       }
     } on Exception catch (error) {
       print(error.toString());
-      _view.onUserError();
+      _view.onUserError(error.toString());
     }
   }
 }

@@ -97,7 +97,7 @@ abstract class ReferralProgramContractor {
   void onAddReferralSucccss(String? message);
   void onAddReferralError(String? error);
   void onGetReferralSucccss(List<Referrals>? referrals);
-  void onGetReferralError();
+  void onGetReferralError(String? error);
 }
 
 class ReferralProgramPresetner {
@@ -109,13 +109,12 @@ class ReferralProgramPresetner {
     try {
       MyReferrals _myReferrals = await api.getReferrals(user_id);
       if (_myReferrals == null) {
-        _view.onGetReferralError();
+        _view.onGetReferralError("No Referrals Found");
       } else {
         _view.onGetReferralSucccss(_myReferrals.referrals);
       }
     } on Exception catch (error) {
-      print(error.toString());
-      _view.onGetReferralError();
+      _view.onGetReferralError(error.toString());
     }
   }
 

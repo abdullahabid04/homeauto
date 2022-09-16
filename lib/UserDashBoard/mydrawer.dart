@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/user_data.dart';
+import '../profile/page/profile_page.dart';
 import '/profile/show_user.dart';
 import 'sidebar_routes/goto_myhomes.dart';
 import 'sidebar_routes/goto_myrooms.dart';
@@ -87,7 +88,7 @@ class _MyDrawerState extends State<MyDrawer> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ShowUser(
+                      builder: (context) => ProfilePage(
                         user: this.user,
                         callbackUser: this.callbackUser,
                       ),
