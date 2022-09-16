@@ -55,11 +55,11 @@ class _SplashScreenState extends State<SplashScreen> {
             height: 140.0,
             width: 140.0,
             child: const Center(
-              child: ClipOval(
+              child: ClipRect(
                   child: Image(image: AssetImage("assets/images/logo.png"))),
             ),
             decoration: BoxDecoration(
-                shape: BoxShape.circle,
+                shape: BoxShape.rectangle,
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
