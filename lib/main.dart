@@ -13,10 +13,14 @@
 // limitations under the License.
 
 import 'package:flutter/material.dart';
-
+import '/userpreferances/user_preferances.dart';
 import '/app.dart';
 
-void main() => runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await UserSharedPreferences.init();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override

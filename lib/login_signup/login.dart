@@ -35,9 +35,6 @@ class LoginScreenState extends State<LoginScreen>
 
   LoginScreenState() {
     _presenter = new LoginScreenPresenter(this);
-    // var authStateProvider = new AuthStateProvider();
-    // authStateProvider.subscribe(this);
-    // authStateProvider.initState();
   }
 
   @override
@@ -79,27 +76,6 @@ class LoginScreenState extends State<LoginScreen>
   void _showSnackBar(String text) {
     scaffoldKey.currentState!
         .showSnackBar(new SnackBar(content: new Text(text)));
-  }
-
-  @override
-  onAuthStateChanged(AuthState state, User? user) {
-    if (state == AuthState.LOGGED_IN) {
-      this.callbackUser(user!);
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => HomeScreen(
-                    user: this.user,
-                    callbackUser: this.callbackUser,
-                  )));
-      setState(() {
-        _isLoading = false;
-      });
-    } else {
-      setState(() {
-        _isLoading = false;
-      });
-    }
   }
 
   void _fieldFocusChange(
@@ -310,5 +286,26 @@ class LoginScreenState extends State<LoginScreen>
     form!.reset();
     var authStateProvider = new AuthStateProvider();
     authStateProvider.notify(AuthState.LOGGED_IN, user);
+  }
+
+  @override
+  onAuthStateChanged(AuthState state, User? user) {
+    if (state == AuthState.LOGGED_IN) {
+      this.callbackUser(user!);
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => HomeScreen(
+                    user: this.user,
+                    callbackUser: this.callbackUser,
+                  )));
+      setState(() {
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 }
