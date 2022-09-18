@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../userpreferances/user_preferances.dart';
 import '/auth.dart';
 import '/models/user_data.dart';
 import '/login_signup/login_screen_presenter.dart';
@@ -46,6 +47,8 @@ class LoginScreenState extends State<LoginScreen>
     var authStateProvider = new AuthStateProvider();
     authStateProvider.subscribe(this);
     authStateProvider.initState();
+    bool? _isFirstRun = UserSharedPreferences.getFirstRun();
+    print(_isFirstRun);
     super.initState();
   }
 

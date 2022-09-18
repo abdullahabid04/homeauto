@@ -1,5 +1,6 @@
 import '/utils/internet_access.dart';
 import '/models/user_data.dart';
+import '/userpreferances/user_preferances.dart';
 
 enum AuthState { LOGGED_IN, LOGGED_OUT }
 
@@ -27,18 +28,32 @@ class AuthStateProvider implements UserContract {
   }
 
   void initState() async {
-    bool isLoggedIn = true;
-    var user_id = "13-abdullah-1029384756";
-    if (isLoggedIn) {
-      if (internetAccess) {
-        await _userPresenter!.doGetUser(user_id);
-        print("hello if");
-      } else {
-        await _userPresenter!.doGetUser(user_id);
-        print("hello else");
-      }
+    String? user_id = UserSharedPreferences.getUserUniqueId() ?? "";
+    bool? _isFirstRun = UserSharedPreferences.getFirstRun() ?? false;
+    bool? _isAccountCreated = UserSharedPreferences.getFirstRun() ?? false;
+    bool? _isVerified = UserSharedPreferences.getFirstRun() ?? false;
+    bool? _isLoggedIn = UserSharedPreferences.getFirstRun() ?? false;
+
+    if (_isFirstRun) {
+      notify(AuthState.LOGGED_IN, user);
     } else {
-      notify(AuthState.LOGGED_OUT, null);
+      if (_isAccountCreated) {
+        if (_isVerified) {
+          if (_isLoggedIn) {
+            if (internetAccess) {
+              await _userPresenter!.doGetUser(user_id);
+            } else {
+              await _userPresenter!.doGetUser(user_id);
+            }
+          } else {
+            notify(AuthState.LOGGED_OUT, null);
+          }
+        } else {
+          notify(AuthState.LOGGED_OUT, null);
+        }
+      } else {
+        notify(AuthState.LOGGED_OUT, null);
+      }
     }
   }
 

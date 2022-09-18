@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:is_first_run/is_first_run.dart';
 import 'dart:async';
-
+import '/utils/check_app_first_run.dart';
 import '../../login_signup/login.dart';
+import '/userpreferances/user_preferances.dart';
 
 class SplashScreen extends StatefulWidget {
   SplashScreen({Key? key, required this.title}) : super(key: key);
@@ -26,8 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     Timer(const Duration(milliseconds: 10), () {
       setState(() {
-        _isVisible =
-            true; // Now it is showing fade effect and navigating to Login page
+        _isVisible = true;
       });
     });
   }

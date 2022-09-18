@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import '../utils/check_app_first_run.dart';
 import '/constants/user_constants.dart';
-import '/utils/check_app_first_run.dart';
 
 class UserSharedPreferences {
   static Future<SharedPreferences> get _instance async =>
@@ -9,7 +9,19 @@ class UserSharedPreferences {
 
   static Future<SharedPreferences> init() async {
     _prefsInstance = await _instance;
+    bool status = await CheckAppFirstRun.check();
+    print(status);
+    setFirstRunStatus(status);
+    if (status) {
+      setInitialValues();
+    }
     return _prefsInstance;
+  }
+
+  static Future setInitialValues() async {
+    await setAccountCreatedStatus(false);
+    await setVerifiedStatus(false);
+    await setLoggedInStatus(false);
   }
 
   static Future setLoggedInStatus(bool is_logged_in) async =>
@@ -69,10 +81,10 @@ class UserSharedPreferences {
       _prefsInstance.getBool(UserConstants.IS_LOGGED_IN);
 
   static bool? getAccountCreated() =>
-      _prefsInstance.getBool(UserConstants.IS_LOGGED_IN);
+      _prefsInstance.getBool(UserConstants.IS_ACCOUNT_CREATED);
 
   static bool? getAccountVerified() =>
-      _prefsInstance.getBool(UserConstants.IS_LOGGED_IN);
+      _prefsInstance.getBool(UserConstants.IS_VERIFIED);
 
   static bool? getFirstRun() =>
       _prefsInstance.getBool(UserConstants.IS_FIRST_RUN);
