@@ -3,25 +3,13 @@ import '../utils/check_app_first_run.dart';
 import '/constants/user_constants.dart';
 
 class UserSharedPreferences {
-  static Future<SharedPreferences> get _instance async =>
-      _prefsInstance = await SharedPreferences.getInstance();
   static late SharedPreferences _prefsInstance;
 
-  static Future<SharedPreferences> init() async {
-    _prefsInstance = await _instance;
+  static Future init() async {
+    _prefsInstance = await SharedPreferences.getInstance();
     bool status = await CheckAppFirstRun.check();
     print(status);
     setFirstRunStatus(status);
-    if (status) {
-      setInitialValues();
-    }
-    return _prefsInstance;
-  }
-
-  static Future setInitialValues() async {
-    await setAccountCreatedStatus(false);
-    await setVerifiedStatus(false);
-    await setLoggedInStatus(false);
   }
 
   static Future setLoggedInStatus(bool is_logged_in) async =>
@@ -58,7 +46,7 @@ class UserSharedPreferences {
   static Future setUserCity(String password) async =>
       await _prefsInstance.setString(UserConstants.CITY, password);
 
-  static Future setUSerAddress(String address) async =>
+  static Future setUserAddress(String address) async =>
       await _prefsInstance.setString(UserConstants.ADDRESS, address);
 
   static Future setUserCreatedDate(String date_created) async =>

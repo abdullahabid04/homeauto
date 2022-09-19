@@ -1,0 +1,46 @@
+import 'package:last_home_auto/utils/network_util.dart';
+
+class HomeName {
+  int? status;
+  String? message;
+  List<Names>? names;
+
+  HomeName({this.status, this.message, this.names});
+
+  HomeName.fromJson(Map<String, dynamic> json) {
+    status = json['status'];
+    message = json['message'];
+    if (json['names'] != null) {
+      names = <Names>[];
+      json['names'].forEach((v) {
+        names!.add(new Names.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['status'] = this.status;
+    data['message'] = this.message;
+    if (this.names != null) {
+      data['names'] = this.names!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Names {
+  String? homeName;
+
+  Names({this.homeName});
+
+  Names.fromJson(Map<String, dynamic> json) {
+    homeName = json['home_name'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['home_name'] = this.homeName;
+    return data;
+  }
+}

@@ -75,8 +75,11 @@ class _ReferProgramState extends State<ReferProgram>
             ),
           ],
         ),
-        body:
-            _isLoading ? ShowProgress() : createListView(context, _referrals));
+        body: _isLoading
+            ? ShowProgress()
+            : _referrals.length != 0
+                ? createListView(context, _referrals)
+                : Container());
   }
 
   Widget _contactWidget(BuildContext context, Referrals referral) {

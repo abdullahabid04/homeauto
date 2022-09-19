@@ -31,8 +31,14 @@ class LoginScreenState extends State<LoginScreen>
   bool _autoValidate = false;
   late LoginScreenPresenter _presenter;
   late ShowDialog _showDialog;
+  TextEditingController _contactController = TextEditingController();
+  late TextEditingValue _contactValue;
+  late TextEditingController _passwordController = new TextEditingController();
+  late TextEditingValue _passwordValue;
   FocusNode _contactNode = new FocusNode();
   FocusNode _passwordNode = new FocusNode();
+  late String user_contact;
+  late String user_password;
 
   LoginScreenState() {
     _presenter = new LoginScreenPresenter(this);
@@ -74,6 +80,13 @@ class LoginScreenState extends State<LoginScreen>
     } else {
       _showSnackBar("Please check internet connection");
     }
+  }
+
+  void setFieldsValue(String user_mobile_no, String user_account_password) {
+    _contactValue = TextEditingValue(text: user_mobile_no);
+    _passwordValue = TextEditingValue(text: user_account_password);
+    _contactController.value = _contactValue;
+    _passwordController.value = _passwordValue;
   }
 
   void _showSnackBar(String text) {
@@ -164,6 +177,7 @@ class LoginScreenState extends State<LoginScreen>
               new Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: new TextFormField(
+                  controller: _contactController,
                   autofocus: true,
                   onSaved: (val) => _contact = val!,
                   validator: contactValidator,
@@ -191,6 +205,7 @@ class LoginScreenState extends State<LoginScreen>
                   children: <Widget>[
                     Expanded(
                       child: new TextFormField(
+                        controller: _passwordController,
                         onSaved: (val) => _password = val!,
                         validator: validatePassword,
                         focusNode: _passwordNode,
@@ -245,6 +260,14 @@ class LoginScreenState extends State<LoginScreen>
               if (result != null && result['success']) {
                 _showDialog.showDialogCustom(
                     context, result['message'], "You may login now");
+                setState(() {
+                  user_contact = UserSharedPreferences.getUserMobileNo() ?? "";
+                  user_password =
+                      UserSharedPreferences.getUserAccountPassword() ?? "";
+                });
+                setFieldsValue(user_contact, user_password);
+                print(user_contact);
+                print(user_password);
               }
             },
             child: Text(
@@ -284,6 +307,7 @@ class LoginScreenState extends State<LoginScreen>
 
   @override
   void onLoginSuccess(User user) async {
+    await UserSharedPreferences.setLoggedInStatus(true);
     setState(() => _isLoadingValue = false);
     final form = formKey.currentState;
     form!.reset();
@@ -292,10 +316,10 @@ class LoginScreenState extends State<LoginScreen>
   }
 
   @override
-  onAuthStateChanged(AuthState state, User? user) {
+  onAuthStateChanged(AuthState state, User? user) async {
     if (state == AuthState.LOGGED_IN) {
       this.callbackUser(user!);
-      Navigator.push(
+      await Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => HomeScreen(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../userpreferances/user_preferances.dart';
 import '/utils/internet_access.dart';
 import '/utils/show_progress.dart';
 import '/utils/check_platform.dart';
@@ -21,6 +22,7 @@ class _MyDevicesState extends State<MyDevices> implements DeviceContract {
   late ShowInternetStatus _showInternetStatus;
   late DevicePresenter _presenter;
   List<Devices> devices = <Devices>[];
+  String user_id = UserSharedPreferences.getUserUniqueId() ?? "";
 
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   final homeRefreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
@@ -56,7 +58,7 @@ class _MyDevicesState extends State<MyDevices> implements DeviceContract {
   }
 
   getDeviceList() async {
-    await _presenter.doGetDevices("13-abdullah-1029384756");
+    await _presenter.doGetDevices(user_id);
   }
 
   @override
@@ -68,9 +70,11 @@ class _MyDevicesState extends State<MyDevices> implements DeviceContract {
           : internetAccess
               ? RefreshIndicator(
                   key: homeRefreshIndicatorKey,
-                  child: UserDevices(
-                    deviceList: devices,
-                  ),
+                  child: devices.length != 0
+                      ? UserDevices(
+                          deviceList: devices,
+                        )
+                      : Container(),
                   onRefresh: () => getDeviceList(),
                 )
               : RefreshIndicator(
@@ -83,7 +87,9 @@ class _MyDevicesState extends State<MyDevices> implements DeviceContract {
 
   @override
   void onDeviceError() {
-    // TODO: implement onDeviceError
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override

@@ -125,7 +125,7 @@ class ShowUserState extends State<ShowUser> implements UserUpdateContract {
           ),
           Container(
             padding: EdgeInsets.zero,
-            child: GetLogOut(),
+            // child: GetLogOut(),
           ),
         ],
       ),

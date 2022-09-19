@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/user_data.dart';
 import '../profile/page/profile_page.dart';
-import '/profile/show_user.dart';
+import '/login_signup/logout.dart';
 import 'sidebar_routes/goto_myhomes.dart';
 import 'sidebar_routes/goto_myrooms.dart';
 import 'sidebar_routes/goto_mydevices.dart';
@@ -21,6 +21,7 @@ class MyDrawer extends StatefulWidget {
 class _MyDrawerState extends State<MyDrawer> {
   late User user;
   late Function callbackUser;
+  GetLogOut _logOut = new GetLogOut();
 
   callbackThis(User user) {
     this.callbackUser(user);
@@ -134,7 +135,7 @@ class _MyDrawerState extends State<MyDrawer> {
             ListTile(
                 leading: const Icon(Icons.logout),
                 title: const Text('Log Out'),
-                onTap: () => {}),
+                onTap: () => _logOut.logout(context)),
           ],
         ),
       ),

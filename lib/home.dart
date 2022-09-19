@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:last_home_auto/userpreferances/user_preferances.dart';
 import '/utils/internet_access.dart';
 import '/utils/show_progress.dart';
 import '/utils/check_platform.dart';
@@ -29,6 +30,7 @@ class HomeScreenState extends State<HomeScreen> implements DeviceContract {
   late DevicePresenter _presenter;
   List<Devices> devices = <Devices>[];
   late MyDrawer _myDrawer;
+  String user_id = UserSharedPreferences.getUserUniqueId() ?? "";
 
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   var homeRefreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
@@ -79,7 +81,7 @@ class HomeScreenState extends State<HomeScreen> implements DeviceContract {
   }
 
   getDeviceList() async {
-    await _presenter.doGetDevices(this.user.userId!);
+    await _presenter.doGetDevices(user_id);
   }
 
   void _showSnackBar(String text) {
@@ -115,9 +117,11 @@ class HomeScreenState extends State<HomeScreen> implements DeviceContract {
             : internetAccess
                 ? RefreshIndicator(
                     key: homeRefreshIndicatorKey,
-                    child: UserDevices(
-                      deviceList: devices,
-                    ),
+                    child: devices.length != 0
+                        ? UserDevices(
+                            deviceList: devices,
+                          )
+                        : Container(),
                     onRefresh: () => getDeviceList(),
                   )
                 : RefreshIndicator(

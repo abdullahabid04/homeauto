@@ -20,40 +20,48 @@ class AuthStateProvider implements UserContract {
   AuthStateProvider.internal() {
     _userPresenter = new UserPresenter(this);
     _subscribers = <AuthStateListener>[];
-    getInternetAccessObject();
   }
+
   Future getInternetAccessObject() async {
     CheckInternetAccess checkInternetAccess = new CheckInternetAccess();
     internetAccess = await checkInternetAccess.check();
   }
 
   void initState() async {
-    String? user_id = UserSharedPreferences.getUserUniqueId() ?? "";
+    await getInternetAccessObject();
+    String? _user_id = UserSharedPreferences.getUserUniqueId() ?? "";
     bool? _isFirstRun = UserSharedPreferences.getFirstRun() ?? false;
-    bool? _isAccountCreated = UserSharedPreferences.getFirstRun() ?? false;
-    bool? _isVerified = UserSharedPreferences.getFirstRun() ?? false;
-    bool? _isLoggedIn = UserSharedPreferences.getFirstRun() ?? false;
+    bool? _isAccountCreated =
+        UserSharedPreferences.getAccountCreated() ?? false;
+    bool? _isVerified = UserSharedPreferences.getAccountVerified() ?? false;
+    bool? _isLoggedIn = UserSharedPreferences.getLoggedIn() ?? false;
 
-    if (_isFirstRun) {
-      notify(AuthState.LOGGED_IN, user);
-    } else {
-      if (_isAccountCreated) {
-        if (_isVerified) {
-          if (_isLoggedIn) {
-            if (internetAccess) {
-              await _userPresenter!.doGetUser(user_id);
-            } else {
-              await _userPresenter!.doGetUser(user_id);
-            }
+    if (_isAccountCreated) {
+      print("account created");
+      print(_isAccountCreated);
+      if (_isVerified) {
+        print(_isVerified);
+        print("account verified");
+        if (_isLoggedIn) {
+          print(_isLoggedIn);
+          print("lgged in");
+          if (internetAccess) {
+            print("have internet");
+            await _userPresenter!.doGetUser(_user_id);
           } else {
             notify(AuthState.LOGGED_OUT, null);
           }
         } else {
+          print("not logged in");
           notify(AuthState.LOGGED_OUT, null);
         }
       } else {
+        print("acount not verified");
         notify(AuthState.LOGGED_OUT, null);
       }
+    } else {
+      print("account not created");
+      notify(AuthState.LOGGED_OUT, null);
     }
   }
 

@@ -1,11 +1,12 @@
 import "package:flutter/material.dart";
-import 'package:flutter/cupertino.dart';
 import '../constants/colors.dart';
 import '/utils/show_progress.dart';
 import '/login_signup/signup_screen_presenter.dart';
 import '/utils/show_dialog.dart';
 import '/utils/check_platform.dart';
 import 'package:flutter/services.dart';
+import '/models/account_verify.dart';
+import '/userpreferances/user_preferances.dart';
 
 class SignupScreen extends StatefulWidget {
   @override
@@ -15,7 +16,7 @@ class SignupScreen extends StatefulWidget {
 }
 
 class SignupScreenState extends State<SignupScreen>
-    implements SignupScreenContract {
+    implements SignupScreenContract, VerifyAccountContractor {
   bool _isLoading = false, _isLoadingValue = false;
   bool _autoValidate = false;
   late ShowDialog _showDialog;
@@ -35,6 +36,7 @@ class SignupScreenState extends State<SignupScreen>
   FocusNode _contactNode = new FocusNode();
 
   late SignupScreenPresenter _presenter;
+  late AccountVerifyPresenter _accountVerifyPresenter;
 
   @override
   void initState() {
@@ -42,6 +44,7 @@ class SignupScreenState extends State<SignupScreen>
       DeviceOrientation.portraitUp,
     ]);
     _presenter = new SignupScreenPresenter(this);
+    _accountVerifyPresenter = new AccountVerifyPresenter(this);
     _showDialog = new ShowDialog();
     _checkPlatform = new CheckPlatform(context: context);
     super.initState();
@@ -59,25 +62,6 @@ class SignupScreenState extends State<SignupScreen>
         _autoValidate = true;
       });
     }
-  }
-
-  @override
-  void onSignupSuccess(Map res) async {
-    Map result = new Map();
-    result['success'] = true;
-    result['message'] = res['message'];
-    setState(() => _isLoadingValue = false);
-    Navigator.of(context).pop(result);
-  }
-
-  @override
-  void onSignupError(String errorTxt) {
-    print("x");
-    _showDialog.showDialogCustom(context, "Error", errorTxt,
-        fontSize: 17.0, boxHeight: 58.0);
-    setState(() {
-      _isLoadingValue = false;
-    });
   }
 
   void _showSnackBar(String text) {
@@ -399,5 +383,45 @@ class SignupScreenState extends State<SignupScreen>
       ),
       body: _isLoading ? ShowProgress() : _showRegisterForm,
     );
+  }
+
+  @override
+  void onSignupSuccess(var res) async {
+    await _accountVerifyPresenter.doVerify(res.userId, res.code.toString());
+    UserSharedPreferences.setAccountCreatedStatus(true);
+    UserSharedPreferences.setUserId(int.parse(res.user.id.toString()));
+    UserSharedPreferences.setUserUniqueId(res.user.userId);
+    UserSharedPreferences.setUserName(res.user.userName);
+    UserSharedPreferences.setUserEmail(res.user.eMail);
+    UserSharedPreferences.setUserMobileNo(res.user.mobileNo);
+    UserSharedPreferences.setUserAccountPassword(res.user.password);
+    UserSharedPreferences.setUserCity(res.user.city);
+    UserSharedPreferences.setUserAddress(res.user.address);
+    UserSharedPreferences.setUserCreatedDate(res.user.dateCreated);
+  }
+
+  @override
+  void onSignupError(String errorTxt) {
+    print("x");
+    _showDialog.showDialogCustom(context, "Error", errorTxt,
+        fontSize: 17.0, boxHeight: 58.0);
+    setState(() {
+      _isLoadingValue = false;
+    });
+  }
+
+  @override
+  void onVerifyAccountSuccess(String? message) async {
+    await UserSharedPreferences.setVerifiedStatus(true);
+    Map result = new Map();
+    result['success'] = true;
+    result['message'] = message;
+    setState(() => _isLoadingValue = false);
+    Navigator.of(context).pop(result);
+  }
+
+  @override
+  void onVerifyAccountError(String? error) {
+    setState(() => _isLoadingValue = false);
   }
 }

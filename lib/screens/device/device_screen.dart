@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:last_home_auto/utils/api_response.dart';
 import '../../constants/colors.dart';
 import '../../models/device_data.dart';
+import '../../userpreferances/user_preferances.dart';
 import '../../utils/check_platform.dart';
 import '../../utils/show_progress.dart';
 import '../../constants/colors.dart';
@@ -27,6 +28,7 @@ class _UserDevicesState extends State<UserDevices>
   bool _isChangingState = false;
   Map<String, bool> _changeState = new Map<String, bool>();
   bool internetAccess = false;
+  String user_id = UserSharedPreferences.getUserUniqueId() ?? "";
   late ShowDialog _showDialog;
   late ShowInternetStatus _showInternetStatus;
   late CheckPlatform _checkPlatform;
@@ -72,7 +74,7 @@ class _UserDevicesState extends State<UserDevices>
   }
 
   getDeviceInfoList() async {
-    await _infoPresenter.doGetDevicesInfo("13-abdullah-1029384756");
+    await _infoPresenter.doGetDevicesInfo(user_id);
   }
 
   Future getInternetAccessObject() async {
