@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:last_home_auto/userpreferances/user_preferances.dart';
+import 'package:last_home_auto/utils/show_status.dart';
 import '/utils/internet_access.dart';
 import '/utils/show_progress.dart';
 import '/utils/check_platform.dart';
@@ -30,6 +31,7 @@ class HomeScreenState extends State<HomeScreen> implements DeviceContract {
   late DevicePresenter _presenter;
   List<Devices> devices = <Devices>[];
   late MyDrawer _myDrawer;
+  late ShowStatus _showStatus;
   String user_id = UserSharedPreferences.getUserUniqueId() ?? "";
 
   final scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -57,6 +59,7 @@ class HomeScreenState extends State<HomeScreen> implements DeviceContract {
     ]);
     _checkPlatform = new CheckPlatform(context: context);
     _showInternetStatus = new ShowInternetStatus();
+    _showStatus = new ShowStatus();
     _presenter = new DevicePresenter(this);
     checkInternet();
     getDeviceList();
@@ -121,7 +124,8 @@ class HomeScreenState extends State<HomeScreen> implements DeviceContract {
                         ? UserDevices(
                             deviceList: devices,
                           )
-                        : Container(),
+                        : _showStatus
+                            .showStatus("You have currently no devices"),
                     onRefresh: () => getDeviceList(),
                   )
                 : RefreshIndicator(

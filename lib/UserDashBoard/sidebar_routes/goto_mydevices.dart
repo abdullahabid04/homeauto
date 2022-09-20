@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../userpreferances/user_preferances.dart';
+import '../../utils/show_status.dart';
 import '/utils/internet_access.dart';
 import '/utils/show_progress.dart';
 import '/utils/check_platform.dart';
@@ -23,6 +24,7 @@ class _MyDevicesState extends State<MyDevices> implements DeviceContract {
   late DevicePresenter _presenter;
   List<Devices> devices = <Devices>[];
   String user_id = UserSharedPreferences.getUserUniqueId() ?? "";
+  late ShowStatus _showStatus;
 
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   final homeRefreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
@@ -34,6 +36,7 @@ class _MyDevicesState extends State<MyDevices> implements DeviceContract {
     ]);
     _checkPlatform = new CheckPlatform(context: context);
     _showInternetStatus = new ShowInternetStatus();
+    _showStatus = new ShowStatus();
     _presenter = new DevicePresenter(this);
     checkInternet();
     getDeviceList();
@@ -74,7 +77,7 @@ class _MyDevicesState extends State<MyDevices> implements DeviceContract {
                       ? UserDevices(
                           deviceList: devices,
                         )
-                      : Container(),
+                      : _showStatus.showStatus("You have currently no devices"),
                   onRefresh: () => getDeviceList(),
                 )
               : RefreshIndicator(
