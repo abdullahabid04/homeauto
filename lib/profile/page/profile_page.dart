@@ -36,7 +36,6 @@ class _ProfilePageState extends State<ProfilePage> implements UserContract {
       DeviceOrientation.portraitUp,
     ]);
     showDialog = new ShowDialog();
-
     _userPresenter = new UserPresenter(this);
     _checkPlatform = new CheckPlatform(context: context);
     _showInternetStatus = new ShowInternetStatus();

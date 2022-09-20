@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:last_home_auto/profile/change_password.dart';
 import '../../constants/colors.dart';
 import '/profile/widget/button_widget.dart';
 import '/profile/widget/profile_widget.dart';
@@ -400,7 +401,18 @@ class _EditProfilePageState extends State<EditProfilePage>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text("Edit Profile"),
+        actions: [
+          IconButton(
+              onPressed: () => {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: ((context) => ChangePassword(
+                            user: user, callbackUser: widget.callbackUser))))
+                  },
+              icon: Icon(Icons.password))
+        ],
+      ),
       body: _isLoading ? ShowProgress() : _createBody(context));
 
   @override
