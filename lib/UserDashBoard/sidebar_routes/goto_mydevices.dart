@@ -112,22 +112,14 @@ class _MyDevicesState extends State<MyDevices>
   }
 
   @override
-  void onGetHomeNamesError(String error) {
-    // TODO: implement onGetNamesError
-  }
+  void onGetHomeNamesError(String error) {}
 
   @override
-  void onGetHomeNamesSuccess(List<HomeNames> list) {
-    // TODO: implement onGetNamesSuccess
-  }
+  void onGetHomeNamesSuccess(List<HomeNames> list) {}
 
   @override
-  void onGetRoomNamesError(String error) {
-    // TODO: implement onGetRoomNamesError
-  }
+  void onGetRoomNamesError(String error) {}
 
   @override
-  void onGetRoomNamesSuccess(List<RoomNames> list) {
-    // TODO: implement onGetRoomNamesSuccess
-  }
+  void onGetRoomNamesSuccess(List<RoomNames> list) {}
 }
