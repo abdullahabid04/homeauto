@@ -311,14 +311,14 @@ class _MyRoomsState extends State<MyRooms>
   }
 
   @override
-  void onGetNamesError(String error) {
+  void onGetHomeNamesError(String error) {
     setState(() {
       _isLoading = false;
     });
   }
 
   @override
-  void onGetNamesSuccess(List<Names> list) {
+  void onGetHomeNamesSuccess(List<HomeNames> list) {
     setState(() {
       list.forEach((element) {
         homeNames.add(element.homeName!);

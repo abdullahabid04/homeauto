@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../models/get_home_names.dart';
+import '../../models/get_room_names.dart';
 import '../../userpreferances/user_preferances.dart';
 import '../../utils/show_status.dart';
 import '/utils/internet_access.dart';
@@ -16,12 +18,14 @@ class MyDevices extends StatefulWidget {
   State<MyDevices> createState() => _MyDevicesState();
 }
 
-class _MyDevicesState extends State<MyDevices> implements DeviceContract {
+class _MyDevicesState extends State<MyDevices>
+    implements DeviceContract, HomeNameContractor, RoomNameContractor {
   bool _isLoading = true;
   bool internetAccess = false;
   late CheckPlatform _checkPlatform;
   late ShowInternetStatus _showInternetStatus;
   late DevicePresenter _presenter;
+  late HomeNamePresenter _homeNamePresenter;
   List<Devices> devices = <Devices>[];
   String user_id = UserSharedPreferences.getUserUniqueId() ?? "";
   late ShowStatus _showStatus;
@@ -38,6 +42,7 @@ class _MyDevicesState extends State<MyDevices> implements DeviceContract {
     _showInternetStatus = new ShowInternetStatus();
     _showStatus = new ShowStatus();
     _presenter = new DevicePresenter(this);
+    _homeNamePresenter = new HomeNamePresenter(this);
     checkInternet();
     getDeviceList();
     super.initState();
@@ -104,5 +109,25 @@ class _MyDevicesState extends State<MyDevices> implements DeviceContract {
     setState(() {
       _isLoading = false;
     });
+  }
+
+  @override
+  void onGetHomeNamesError(String error) {
+    // TODO: implement onGetNamesError
+  }
+
+  @override
+  void onGetHomeNamesSuccess(List<HomeNames> list) {
+    // TODO: implement onGetNamesSuccess
+  }
+
+  @override
+  void onGetRoomNamesError(String error) {
+    // TODO: implement onGetRoomNamesError
+  }
+
+  @override
+  void onGetRoomNamesSuccess(List<RoomNames> list) {
+    // TODO: implement onGetRoomNamesSuccess
   }
 }

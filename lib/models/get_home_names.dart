@@ -5,7 +5,7 @@ import '../utils/custom_exception.dart';
 class HomeName {
   int? status;
   String? message;
-  List<Names>? names;
+  List<HomeNames>? names;
 
   HomeName({this.status, this.message, this.names});
 
@@ -13,9 +13,9 @@ class HomeName {
     status = json['status'];
     message = json['message'];
     if (json['names'] != null) {
-      names = <Names>[];
+      names = <HomeNames>[];
       json['names'].forEach((v) {
-        names!.add(new Names.fromJson(v));
+        names!.add(new HomeNames.fromJson(v));
       });
     }
   }
@@ -31,12 +31,12 @@ class HomeName {
   }
 }
 
-class Names {
+class HomeNames {
   String? homeName;
 
-  Names({this.homeName});
+  HomeNames({this.homeName});
 
-  Names.fromJson(Map<String, dynamic> json) {
+  HomeNames.fromJson(Map<String, dynamic> json) {
     homeName = json['home_name'];
   }
 
@@ -62,8 +62,8 @@ class RequestNames {
 }
 
 abstract class HomeNameContractor {
-  void onGetNamesSuccess(List<Names> list);
-  void onGetNamesError(String error);
+  void onGetHomeNamesSuccess(List<HomeNames> list);
+  void onGetHomeNamesError(String error);
 }
 
 class HomeNamePresenter {
@@ -74,9 +74,9 @@ class HomeNamePresenter {
   doGetNames(String user_id) async {
     try {
       HomeName home = await api.getNames(user_id);
-      _contractor.onGetNamesSuccess(home.names!);
+      _contractor.onGetHomeNamesSuccess(home.names!);
     } on Exception catch (error) {
-      _contractor.onGetNamesError(error.toString());
+      _contractor.onGetHomeNamesError(error.toString());
     }
   }
 }
