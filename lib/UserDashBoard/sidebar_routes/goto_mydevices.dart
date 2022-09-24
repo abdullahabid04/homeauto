@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../models/get_home_names.dart';
-import '../../models/get_room_names.dart';
 import '../../userpreferances/user_preferances.dart';
 import '../../utils/show_status.dart';
 import '/utils/internet_access.dart';
@@ -10,6 +8,7 @@ import '/utils/show_internet_status.dart';
 import '/screens/device/device_screen.dart';
 import 'package:flutter/services.dart';
 import '/models/device_data.dart';
+import '/screens/add_device/connect_to_device.dart';
 
 class MyDevices extends StatefulWidget {
   const MyDevices({Key? key}) : super(key: key);
@@ -18,14 +17,13 @@ class MyDevices extends StatefulWidget {
   State<MyDevices> createState() => _MyDevicesState();
 }
 
-class _MyDevicesState extends State<MyDevices>
-    implements DeviceContract, HomeNameContractor, RoomNameContractor {
+class _MyDevicesState extends State<MyDevices> implements DeviceContract {
   bool _isLoading = true;
   bool internetAccess = false;
   late CheckPlatform _checkPlatform;
   late ShowInternetStatus _showInternetStatus;
   late DevicePresenter _presenter;
-  late HomeNamePresenter _homeNamePresenter;
+
   List<Devices> devices = <Devices>[];
   String user_id = UserSharedPreferences.getUserUniqueId() ?? "";
   late ShowStatus _showStatus;
@@ -42,7 +40,7 @@ class _MyDevicesState extends State<MyDevices>
     _showInternetStatus = new ShowInternetStatus();
     _showStatus = new ShowStatus();
     _presenter = new DevicePresenter(this);
-    _homeNamePresenter = new HomeNamePresenter(this);
+
     checkInternet();
     getDeviceList();
     super.initState();
@@ -72,7 +70,15 @@ class _MyDevicesState extends State<MyDevices>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text("My Devices"),
+        actions: [
+          IconButton(
+              onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: ((context) => ConnectToDevice()))),
+              icon: Icon(Icons.add))
+        ],
+      ),
       body: _isLoading
           ? ShowProgress()
           : internetAccess
@@ -110,16 +116,4 @@ class _MyDevicesState extends State<MyDevices>
       _isLoading = false;
     });
   }
-
-  @override
-  void onGetHomeNamesError(String error) {}
-
-  @override
-  void onGetHomeNamesSuccess(List<HomeNames> list) {}
-
-  @override
-  void onGetRoomNamesError(String error) {}
-
-  @override
-  void onGetRoomNamesSuccess(List<RoomNames> list) {}
 }

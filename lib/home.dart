@@ -7,6 +7,7 @@ import '/utils/check_platform.dart';
 import '/utils/show_internet_status.dart';
 import '/models/user_data.dart';
 import '/profile/get_to_user_profile.dart';
+import 'screens/add_device/connect_to_device.dart';
 import 'screens/device/device_screen.dart';
 import 'package:flutter/services.dart';
 import '/UserDashBoard/mydrawer.dart';
@@ -113,7 +114,12 @@ class HomeScreenState extends State<HomeScreen> implements DeviceContract {
               fontSize: 15.0,
             ),
           ),
-          actions: <Widget>[],
+          actions: [
+            IconButton(
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: ((context) => ConnectToDevice()))),
+                icon: Icon(Icons.add))
+          ],
         ),
         body: _isLoading
             ? ShowProgress()
