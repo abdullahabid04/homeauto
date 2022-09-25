@@ -27,6 +27,8 @@ dependencies:
   is_first_run: ^1.0.0
   image_picker: ^0.8.5+3
   flutter_blue: ^0.8.0
+  connectivity_plus: ^2.3.7
+  network_info_plus: ^2.1.4+1
 
 dev_dependencies:
   flutter_test:

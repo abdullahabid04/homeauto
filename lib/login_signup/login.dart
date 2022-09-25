@@ -271,7 +271,7 @@ class LoginScreenState extends State<LoginScreen>
               }
             },
             child: Text(
-              'Register?',
+              'Don\'t have an account? Register',
               textScaleFactor: 1,
               style: TextStyle(
                 color: kHAutoBlue50,

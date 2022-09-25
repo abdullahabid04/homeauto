@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:last_home_auto/screens/add_device/device_list.dart';
 import '../../userpreferances/user_preferances.dart';
 import '../../utils/show_status.dart';
 import '/utils/internet_access.dart';
@@ -74,8 +75,8 @@ class _MyDevicesState extends State<MyDevices> implements DeviceContract {
         title: Text("My Devices"),
         actions: [
           IconButton(
-              onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: ((context) => ConnectToDevice()))),
+              onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: ((context) => ManufacturedDevices()))),
               icon: Icon(Icons.add))
         ],
       ),

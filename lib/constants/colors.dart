@@ -25,3 +25,6 @@ const kShrineErrorRed = const Color(0xFFC5032B);
 
 const kHAutoWhite = const Color(0xFFFFFBFA);
 const kHAutoBackgroundWhite = Colors.white;
+
+const kHAutoLightGrey = Color(0xCCCCCC);
+const kHAutoDarkGrey = Color(0x666666);

@@ -91,7 +91,7 @@ class RequestDevice {
     return _netUtil
         .post(getDeviceURL, body: {"user_id": user}).then((dynamic res) {
       print(res.toString());
-      // if (res["status"] == 0) throw new FormException(res["message"]);
+      if (res["status"] == 0) throw new FormException(res["message"]);
       return DeviceData.fromJson(res);
     });
   }

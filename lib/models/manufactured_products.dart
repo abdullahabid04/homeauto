@@ -95,7 +95,7 @@ class ManufacturedProductsPresenter {
   RequestProducts api = new RequestProducts();
   ManufacturedProductsPresenter(this._contracor);
 
-  doGetContacts() async {
+  doGetProducts() async {
     try {
       ManufacturedProducts data = await api.getPrducts();
       if (data == null) {

@@ -5,6 +5,7 @@ import 'home.dart';
 import 'login_signup/login.dart';
 import 'login_signup/signup.dart';
 import '/themes/my_app_theme.dart';
+import '/constants/routes.dart';
 
 void main() async {
   await WidgetsFlutterBinding.ensureInitialized();
@@ -19,12 +20,12 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Home Automation',
       theme: MyAppTheme.getTheme(),
-      initialRoute: '/',
+      initialRoute: initialRoute,
       routes: {
-        '/': (context) => HomeAutomationSplashScreen(),
-        '/login': (context) => LoginScreen(),
-        '/signup': (context) => SignupScreen(),
-        '/home': (context) => HomeScreen(),
+        initialRoute: (context) => HomeAutomationSplashScreen(),
+        loginRoute: (context) => LoginScreen(),
+        registerRoute: (context) => SignupScreen(),
+        homeRoute: (context) => HomeScreen(),
       },
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:last_home_auto/screens/add_device/device_list.dart';
 import 'package:last_home_auto/userpreferances/user_preferances.dart';
 import 'package:last_home_auto/utils/show_status.dart';
 import '/utils/internet_access.dart';
@@ -89,9 +90,9 @@ class HomeScreenState extends State<HomeScreen> implements DeviceContract {
   }
 
   void _showSnackBar(String text) {
-    scaffoldKey.currentState!.removeCurrentSnackBar();
-    scaffoldKey.currentState!
-        .showSnackBar(new SnackBar(content: new Text(text)));
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    SnackBar _snackBar = new SnackBar(content: Text(text));
+    ScaffoldMessenger.of(context).showSnackBar(_snackBar);
   }
 
   @override
@@ -117,7 +118,7 @@ class HomeScreenState extends State<HomeScreen> implements DeviceContract {
           actions: [
             IconButton(
                 onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: ((context) => ConnectToDevice()))),
+                    builder: ((context) => ManufacturedDevices()))),
                 icon: Icon(Icons.add))
           ],
         ),
@@ -144,7 +145,11 @@ class HomeScreenState extends State<HomeScreen> implements DeviceContract {
   }
 
   @override
-  void onDeviceError() {}
+  void onDeviceError() {
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   @override
   void onDeviceSuccess(DeviceData userDetails) {
