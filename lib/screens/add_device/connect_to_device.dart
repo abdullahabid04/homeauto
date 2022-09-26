@@ -186,6 +186,7 @@ class _ConnectToDeviceState extends State<ConnectToDevice>
         '${wifiNameController.value.text.toString()},${wifiPasswordController.value.text.toString()},${_deviceId}';
     print(wifiData);
     writeData(wifiData);
+    Future.delayed(Duration(seconds: 1));
   }
 
   @override
