@@ -147,8 +147,8 @@ class Arc2Painter extends CustomPainter {
         size.height - 0.2 * size.height);
 
     canvas.drawArc(rect2, 0.0, 0.5 * pi, false, p2);
-    canvas.drawArc(rect2, 0.8 * pi, 0.6 * pi, false, p2);
-    canvas.drawArc(rect2, 1.6 * pi, 0.2 * pi, false, p2);
+    canvas.drawArc(rect2, 0.6 * pi, 0.8 * pi, false, p2);
+    canvas.drawArc(rect2, 1.5 * pi, 0.4 * pi, false, p2);
   }
 
   @override
@@ -176,8 +176,9 @@ class Arc3Painter extends CustomPainter {
         size.width - 0.4 * size.width,
         size.height - 0.4 * size.height);
 
-    canvas.drawArc(rect3, 0.0, 0.9 * pi, false, p3);
-    canvas.drawArc(rect3, 1.1 * pi, 0.8 * pi, false, p3);
+    canvas.drawArc(rect3, 0.0, 0.5 * pi, false, p3);
+    canvas.drawArc(rect3, 0.6 * pi, 0.8 * pi, false, p3);
+    canvas.drawArc(rect3, 1.5 * pi, 0.4 * pi, false, p3);
   }
 
   @override

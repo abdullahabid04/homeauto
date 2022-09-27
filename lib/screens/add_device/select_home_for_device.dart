@@ -106,8 +106,8 @@ class _SelectHomeForDeviceState extends State<SelectHomeForDevice>
   Widget _createHomeWidget(BuildContext context, Home home) {
     return Card(
       child: ListTile(
-        title: Text(""),
-        subtitle: Text(""),
+        title: Text(home.homeId!),
+        subtitle: Text(home.homeName!),
         leading: Icon(Icons.home),
         trailing: IconButton(
           icon: Icon(Icons.arrow_circle_right),

@@ -64,9 +64,8 @@ class _SelectRoomForDeviceState extends State<SelectRoomForDevice>
     _showStatus = new ShowStatus();
     _showDialog = new ShowDialog();
     _presenter = new GetRoomPresenter(this);
-
     checkInternet();
-
+    getroomList();
     super.initState();
   }
 
@@ -87,8 +86,8 @@ class _SelectRoomForDeviceState extends State<SelectRoomForDevice>
     await getInternetAccessObject();
   }
 
-  getroomList(String home_name) async {
-    await _presenter.doGetRoom(user_id, home_name);
+  getroomList() async {
+    await _presenter.doGetRoom(user_id, widget.home.homeName!);
   }
 
   @override
@@ -106,7 +105,7 @@ class _SelectRoomForDeviceState extends State<SelectRoomForDevice>
                   child: rooms.length != 0
                       ? _createRoomList(context, rooms)
                       : _showStatus.showStatus("You have currently no rooms"),
-                  onRefresh: () => getroomList(dropDownValue),
+                  onRefresh: () => getroomList(),
                 )
               : RefreshIndicator(
                   key: homeRefreshIndicatorKey,
@@ -119,8 +118,8 @@ class _SelectRoomForDeviceState extends State<SelectRoomForDevice>
   Widget _createRoomWidget(BuildContext context, Room room) {
     return Card(
       child: ListTile(
-        title: Text(""),
-        subtitle: Text(""),
+        title: Text(room.roomId!),
+        subtitle: Text(room.roomName!),
         leading: Icon(Icons.home),
         trailing: IconButton(
           icon: Icon(Icons.arrow_circle_right),
