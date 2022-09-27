@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:last_home_auto/screens/add_device/device_add.dart';
+import '../../models/home_data.dart';
+import '../../models/manufactured_products.dart';
 import '/utils/api_response.dart';
 import '/utils/show_dialog.dart';
 import '/utils/show_status.dart';
@@ -12,14 +15,23 @@ import '/models/get_home_names.dart';
 import '/screens/userrooms/user_rooms.dart';
 import '/userpreferances/user_preferances.dart';
 
-class MyRooms extends StatefulWidget {
-  const MyRooms({Key? key}) : super(key: key);
+class SelectRoomForDevice extends StatefulWidget {
+  final Products product;
+  final String device_id;
+  final Home home;
+  const SelectRoomForDevice(
+      {Key? key,
+      required this.product,
+      required this.device_id,
+      required this.home})
+      : super(key: key);
 
   @override
-  State<MyRooms> createState() => _MyRoomsState();
+  State<SelectRoomForDevice> createState() => _SelectRoomForDeviceState();
 }
 
-class _MyRoomsState extends State<MyRooms> implements GetRoomContract {
+class _SelectRoomForDeviceState extends State<SelectRoomForDevice>
+    implements GetRoomContract {
   bool _isLoading = true;
   bool internetAccess = false;
   bool _autoValidateHomeReName = false;
@@ -112,7 +124,16 @@ class _MyRoomsState extends State<MyRooms> implements GetRoomContract {
         leading: Icon(Icons.home),
         trailing: IconButton(
           icon: Icon(Icons.arrow_circle_right),
-          onPressed: () => {},
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: ((context) => AddDevice(
+                    product: widget.product,
+                    device_id: widget.device_id,
+                    home: widget.home,
+                    room: room,
+                  )),
+            ),
+          ),
         ),
       ),
     );

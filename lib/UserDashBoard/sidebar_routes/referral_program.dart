@@ -67,10 +67,11 @@ class _ReferProgramState extends State<ReferProgram>
               icon: Icon(Icons.person_add),
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(
-                    builder: ((context) => AddReferral(
-                          user: widget.user,
-                          callbackUser: widget.callbackUser,
-                        ))),
+                  builder: ((context) => AddReferral(
+                        user: widget.user,
+                        callbackUser: widget.callbackUser,
+                      )),
+                ),
               ),
             ),
           ],
@@ -105,10 +106,18 @@ class _ReferProgramState extends State<ReferProgram>
   }
 
   @override
-  void onAddReferralError(String? error) {}
+  void onAddReferralError(String? error) {
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   @override
-  void onAddReferralSucccss(String? message) {}
+  void onAddReferralSucccss(String? message) {
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   @override
   void onGetReferralError(String? error) {

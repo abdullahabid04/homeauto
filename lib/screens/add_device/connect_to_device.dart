@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert' show utf8;
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:last_home_auto/screens/add_device/select_home_for_device.dart';
 import '../../constants/colors.dart';
 import '../../utils/show_progress.dart';
 import '/models/manufactured_products.dart';
@@ -252,7 +253,20 @@ class _ConnectToDeviceState extends State<ConnectToDevice>
                     Padding(
                       padding: const EdgeInsets.all(16),
                       child: FlatButton(
-                        onPressed: submitAction,
+                        onPressed: () {
+                          submitAction();
+                          Future.delayed(
+                            Duration(seconds: 1),
+                          );
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: ((context) => SelectHomeForDevice(
+                                    product: widget.product,
+                                    device_id: _deviceId,
+                                  )),
+                            ),
+                          );
+                        },
                         color: kHAutoBlue50,
                         child: const Text('Submit'),
                       ),
