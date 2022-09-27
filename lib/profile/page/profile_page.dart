@@ -14,7 +14,7 @@ import '/utils/check_platform.dart';
 class ProfilePage extends StatefulWidget {
   User? user;
   Function? callbackUser;
-  ProfilePage({this.user, this.callbackUser});
+  ProfilePage({Key? key, this.user, this.callbackUser}) : super(key: key);
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
