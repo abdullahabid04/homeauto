@@ -1,42 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:last_home_auto/UserDashBoard/sidebar_routes/goto_myrooms.dart';
-import 'package:last_home_auto/screens/userrooms/my_room.dart';
+import 'package:last_home_auto/models/room_data.dart';
+import 'package:last_home_auto/screens/device/my_devices.dart';
 import 'package:last_home_auto/utils/api_response.dart';
+import 'package:last_home_auto/utils/show_progress.dart';
 import '../../constants/colors.dart';
 import '../../models/home_data.dart';
 import '../../constants/colors.dart';
 import 'package:flutter/services.dart';
+import '../../userpreferances/user_preferances.dart';
 import '../../utils/internet_access.dart';
 import '../../utils/show_dialog.dart';
 import '../../utils/show_internet_status.dart';
 import '/utils/delete_confirmation.dart';
 import '/validators/all_validators.dart';
 
-class UserHomes extends StatefulWidget {
-  final homeList;
-  const UserHomes({Key? key, this.homeList}) : super(key: key);
+class UserRoomsFromHome extends StatefulWidget {
+  final Home home;
+  const UserRoomsFromHome({Key? key, required this.home}) : super(key: key);
 
   @override
-  State<UserHomes> createState() => _UserHomesState();
+  State<UserRoomsFromHome> createState() => _UserRoomsFromHomeState();
 }
 
-class _UserHomesState extends State<UserHomes> implements HomeScreenContract {
+class _UserRoomsFromHomeState extends State<UserRoomsFromHome>
+    implements RoomScreenContract, GetRoomContract {
   bool _isLoading = true;
   bool internetAccess = false;
   late ShowDialog _showDialog;
   late ShowInternetStatus _showInternetStatus;
+  List<Room> roomList = <Room>[];
 
-  late String _homeName;
-  var homeNameFormKey = new GlobalKey<FormState>();
-  var homeReNameFormKey = new GlobalKey<FormState>();
+  late String _roomName;
+  var roomNameFormKey = new GlobalKey<FormState>();
+  var roomReNameFormKey = new GlobalKey<FormState>();
   bool _autoValidateHomeName = false;
   bool _autoValidateHomeReName = false;
 
-  late HomeScreenPresenter _presenter;
+  late RoomScreenPresenter _presenter;
+  late GetRoomPresenter _roomPresenter;
   late DeleteConfirmation _confirmation;
 
   final scaffoldKey = new GlobalKey<ScaffoldState>();
-  var deviceRefreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
+  var roomRefreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
+
+  String user_id = UserSharedPreferences.getUserUniqueId() ?? "";
 
   @override
   void initState() {
@@ -44,15 +51,21 @@ class _UserHomesState extends State<UserHomes> implements HomeScreenContract {
       DeviceOrientation.portraitUp,
     ]);
     _confirmation = new DeleteConfirmation();
-    _presenter = new HomeScreenPresenter(this);
+    _presenter = new RoomScreenPresenter(this);
+    _roomPresenter = new GetRoomPresenter(this);
     _showDialog = new ShowDialog();
     _showInternetStatus = new ShowInternetStatus();
+    _getrooms();
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  _getrooms() async {
+    await _roomPresenter.doGetRoom(user_id, widget.home.homeName!);
   }
 
   Future getInternetAccessObject() async {
@@ -63,11 +76,11 @@ class _UserHomesState extends State<UserHomes> implements HomeScreenContract {
     });
   }
 
-  _renameHome(String? user_id, String? home_id, String home_name) async {
-    await _presenter.doRenameHome(user_id!, home_id!, home_name);
+  _renameRoom(String? user_id, String? room_id, String room_name) async {
+    await _presenter.doRenameRoom(user_id!, room_id!, room_name);
   }
 
-  _showHomeReNameDialog(Home home) async {
+  _showRoomReNameDialog(Room room) async {
     await showDialog<String>(
       context: context,
       builder: (BuildContext context) => new AlertDialog(
@@ -77,16 +90,16 @@ class _UserHomesState extends State<UserHomes> implements HomeScreenContract {
             new Expanded(
               child: Form(
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                key: homeReNameFormKey,
+                key: roomReNameFormKey,
                 child: new TextFormField(
-                  initialValue: home.homeName,
-                  onSaved: (val) => _homeName = val!,
+                  initialValue: room.roomName,
+                  onSaved: (val) => _roomName = val!,
                   textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.next,
                   onFieldSubmitted: (val) async {
                     await getInternetAccessObject();
                     if (internetAccess) {
-                      var form = homeReNameFormKey.currentState;
+                      var form = roomReNameFormKey.currentState;
                       if (form!.validate()) {
                         form.save();
                         Navigator.pop(context);
@@ -94,7 +107,7 @@ class _UserHomesState extends State<UserHomes> implements HomeScreenContract {
                           _isLoading = true;
                           _autoValidateHomeReName = false;
                         });
-                        _renameHome(home.userId, home.homeId, _homeName);
+                        _renameRoom(room.userId, room.roomId, _roomName);
                       } else {
                         setState(() {
                           _autoValidateHomeReName = true;
@@ -111,7 +124,7 @@ class _UserHomesState extends State<UserHomes> implements HomeScreenContract {
                     }
                   },
                   autofocus: true,
-                  validator: (val) => homeValidator(val, null),
+                  validator: (val) => roomValidator(val, null),
                   decoration: new InputDecoration(
                     labelText: 'Home',
                   ),
@@ -124,7 +137,7 @@ class _UserHomesState extends State<UserHomes> implements HomeScreenContract {
           new FlatButton(
             child: const Text('CANCEL'),
             onPressed: () {
-              var form = homeReNameFormKey.currentState;
+              var form = roomReNameFormKey.currentState;
               form!.reset();
               Navigator.pop(context);
             },
@@ -134,7 +147,7 @@ class _UserHomesState extends State<UserHomes> implements HomeScreenContract {
             onPressed: () async {
               await getInternetAccessObject();
               if (internetAccess) {
-                var form = homeReNameFormKey.currentState;
+                var form = roomReNameFormKey.currentState;
                 if (form!.validate()) {
                   form.save();
                   Navigator.pop(context);
@@ -142,7 +155,7 @@ class _UserHomesState extends State<UserHomes> implements HomeScreenContract {
                     _isLoading = true;
                     _autoValidateHomeReName = false;
                   });
-                  _renameHome(home.userId, home.homeId, _homeName);
+                  _renameRoom(room.userId, room.roomId, _roomName);
                 } else {
                   setState(() {
                     _autoValidateHomeReName = true;
@@ -164,7 +177,7 @@ class _UserHomesState extends State<UserHomes> implements HomeScreenContract {
     );
   }
 
-  _deleteHome(Home home) async {
+  _deleteHome(Room room) async {
     await getInternetAccessObject();
     if (internetAccess) {
       bool status = await _confirmation.showConfirmDialog(context);
@@ -172,7 +185,7 @@ class _UserHomesState extends State<UserHomes> implements HomeScreenContract {
         setState(() {
           _isLoading = true;
         });
-        await _presenter.doDeleteHome(home.userId, home.homeId);
+        await _presenter.doDeleteRoom(room.userId, room.roomId);
       }
     } else {
       this._showDialog.showDialogCustom(context, "Internet Connection Problem",
@@ -183,25 +196,26 @@ class _UserHomesState extends State<UserHomes> implements HomeScreenContract {
 
   @override
   Widget build(BuildContext context) {
-    return createListView(context, widget.homeList);
-  }
-
-  Widget createListView(BuildContext context, List<Home> homeList) {
-    return new GridView.count(
-      crossAxisCount: 2,
-      // Generate 100 Widgets that display their index in the List
-      children: homeList.map((value) => homeWidget(context, value)).toList(),
+    return Scaffold(
+      appBar: AppBar(),
+      body: _isLoading ? ShowProgress() : createListView(context, roomList),
     );
   }
 
-  Widget homeWidget(BuildContext context, Home home) {
+  Widget createListView(BuildContext context, List<Room> roomList) {
+    return new GridView.count(
+      crossAxisCount: 2,
+      children: roomList.map((value) => roomWidget(context, value)).toList(),
+    );
+  }
+
+  Widget roomWidget(BuildContext context, Room room) {
     return Container(
       child: InkWell(
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute(
-            builder: ((context) => UserRoomsFromHome(
-                  home: home,
-                )),
+            builder: ((context) =>
+                UserDevicesFromRooms(home: widget.home, room: room)),
           ),
         ),
         splashColor: kHAutoBlue300,
@@ -217,7 +231,7 @@ class _UserHomesState extends State<UserHomes> implements HomeScreenContract {
                     title: Hero(
                       tag: Object(),
                       child: Text(
-                        "${home.homeName}",
+                        "${room.roomName}",
                         textAlign: TextAlign.left,
                         style: Theme.of(context)
                             .textTheme
@@ -226,7 +240,7 @@ class _UserHomesState extends State<UserHomes> implements HomeScreenContract {
                       ),
                     ),
                     subtitle: Text(
-                      "${home.homeName}",
+                      "${room.roomName}",
                       style: TextStyle(
                         fontSize: 13.0,
                       ),
@@ -251,7 +265,7 @@ class _UserHomesState extends State<UserHomes> implements HomeScreenContract {
                         width: 40.0,
                         child: FlatButton(
                           onPressed: () async {
-                            await _showHomeReNameDialog(home);
+                            await _showRoomReNameDialog(room);
                           },
                           child: Icon(Icons.edit),
                         ),
@@ -263,7 +277,7 @@ class _UserHomesState extends State<UserHomes> implements HomeScreenContract {
                         width: 40.0,
                         child: FlatButton(
                           onPressed: () async {
-                            await _deleteHome(home);
+                            await _deleteHome(room);
                           },
                           child: Icon(Icons.delete),
                         ),
@@ -281,21 +295,50 @@ class _UserHomesState extends State<UserHomes> implements HomeScreenContract {
 
   @override
   void onError(String errorTxt) {
-    // TODO: implement onError
+    setState(() {
+      _isLoading = false;
+    });
+    _showDialog.showDialogCustom(context, "Error", errorTxt);
   }
 
   @override
-  void onSuccess(ResponseDataAPI home) {
-    // TODO: implement onSuccess
+  void onSuccess(ResponseDataAPI room) {
+    setState(() {
+      _isLoading = false;
+    });
+    _showDialog.showDialogCustom(context, "Success", room.message!);
   }
 
   @override
-  void onSuccessDelete(ResponseDataAPI home) {
-    // TODO: implement onSuccessDelete
+  void onSuccessDelete(ResponseDataAPI room) {
+    setState(() {
+      _isLoading = false;
+    });
+    _showDialog.showDialogCustom(context, "Success", room.message!);
   }
 
   @override
-  void onSuccessRename(ResponseDataAPI home) {
-    // TODO: implement onSuccessRename
+  void onSuccessRename(ResponseDataAPI room) {
+    setState(() {
+      _isLoading = false;
+    });
+    _showDialog.showDialogCustom(context, "Success", room.message!);
+  }
+
+  @override
+  void onGetRoomError(String errorTxt) {
+    setState(() {
+      _isLoading = false;
+    });
+    _showDialog.showDialogCustom(context, "Error", errorTxt);
+  }
+
+  @override
+  void onGetRoomSuccess(RoomData room) {
+    setState(() {
+      roomList = room.room!;
+      _isLoading = false;
+    });
+    _showDialog.showDialogCustom(context, "Success", room.message!);
   }
 }

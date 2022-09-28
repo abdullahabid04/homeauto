@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:last_home_auto/screens/controldevice/device_remote.dart';
 import 'package:last_home_auto/utils/api_response.dart';
 import '../../constants/colors.dart';
 import '../../models/device_data.dart';
+import '../../models/home_data.dart';
+import '../../models/room_data.dart';
+import '../../models/specific_device_data.dart';
+import '../../models/specific_device_info.dart';
 import '../../userpreferances/user_preferances.dart';
 import '../../utils/check_platform.dart';
 import '../../utils/show_progress.dart';
@@ -10,22 +15,34 @@ import 'package:flutter/services.dart';
 import '../../utils/internet_access.dart';
 import '../../utils/show_dialog.dart';
 import '../../utils/show_internet_status.dart';
-import '../controldevice/device_remote.dart';
 import '/models/device_data.dart';
 import '/models/device_info.dart';
 import '/utils/delete_confirmation.dart';
 import '/validators/all_validators.dart';
 
-class UserDevices extends StatefulWidget {
-  final deviceList;
-  const UserDevices({Key? key, this.deviceList}) : super(key: key);
+class UserDevicesFromRooms extends StatefulWidget {
+  final Home? home;
+  final Room? room;
+  final String? home_id;
+  final String? room_id;
+  const UserDevicesFromRooms({
+    Key? key,
+    this.home,
+    this.room,
+    this.home_id,
+    this.room_id,
+  }) : super(key: key);
 
   @override
-  State<UserDevices> createState() => _UserDevicesState();
+  State<UserDevicesFromRooms> createState() => _UserDevicesFromRoomsState();
 }
 
-class _UserDevicesState extends State<UserDevices>
-    implements DeviceUpdateContract, DeviceInfoContract {
+class _UserDevicesFromRoomsState extends State<UserDevicesFromRooms>
+    implements
+        DeviceUpdateContract,
+        DeviceInfoContract,
+        SpecificDeviceInfoContract,
+        SpecificDeviceContract {
   bool _isLoading = true;
   bool _isChangingState = false;
   Map<String, bool> _changeState = new Map<String, bool>();
@@ -36,12 +53,16 @@ class _UserDevicesState extends State<UserDevices>
   late CheckPlatform _checkPlatform;
 
   late String _deviceName, _sharedToContact;
-  late List<Info> infoList = <Info>[];
+
+  List<SpcificDevices> deviceList = <SpcificDevices>[];
+  List<SpecificInfo> infoList = <SpecificInfo>[];
   bool _autoValidateHomeName = false;
   bool _autoValidateHomeReName = false;
 
   late DeviceUpdatePresenter _presenter;
   late DeviceInfoPresenter _infoPresenter;
+  late SpecificDevicePresenter _devicePresenter;
+  late SpecificDeviceInfoPresenter _deviceInfoPresenter;
   late DeleteConfirmation _confirmation;
 
   final scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -59,10 +80,12 @@ class _UserDevicesState extends State<UserDevices>
     _confirmation = new DeleteConfirmation();
     _presenter = new DeviceUpdatePresenter(this);
     _infoPresenter = new DeviceInfoPresenter(this);
+    _devicePresenter = new SpecificDevicePresenter(this);
+    _deviceInfoPresenter = new SpecificDeviceInfoPresenter(this);
     _showDialog = new ShowDialog();
     _showInternetStatus = new ShowInternetStatus();
     checkInternet();
-    getDeviceInfoList();
+    _getDevicesAndInfo();
     super.initState();
   }
 
@@ -75,8 +98,24 @@ class _UserDevicesState extends State<UserDevices>
     await getInternetAccessObject();
   }
 
-  getDeviceInfoList() async {
-    await _infoPresenter.doGetDevicesInfo(user_id);
+  _getDevicesAndInfo() async {
+    if (widget.home != null && widget.room != null) {
+      await _devicePresenter.doGetDevices(
+          user_id, widget.home!.homeId!, widget.room!.roomId!);
+    } else {
+      await _devicePresenter.doGetDevices(
+          user_id, widget.home_id!, widget.room_id!);
+    }
+  }
+
+  _getDevicesInfo() async {
+    if (widget.home != null && widget.room != null) {
+      await _deviceInfoPresenter.doGetDevicesInfo(
+          user_id, widget.home!.homeId!, widget.room!.roomId!);
+    } else {
+      await _deviceInfoPresenter.doGetDevicesInfo(
+          user_id, widget.home_id!, widget.room_id!);
+    }
   }
 
   Future getInternetAccessObject() async {
@@ -107,7 +146,7 @@ class _UserDevicesState extends State<UserDevices>
     await _infoPresenter.doPowerDevice(user_id!, device_id!, device_status);
   }
 
-  _showHomeReNameDialog(Devices device) async {
+  _showHomeReNameDialog(SpcificDevices device) async {
     await showDialog<String>(
       context: context,
       builder: (BuildContext context) => new AlertDialog(
@@ -205,7 +244,7 @@ class _UserDevicesState extends State<UserDevices>
     );
   }
 
-  _deleteDevice(Devices device) async {
+  _deleteDevice(SpcificDevices device) async {
     await getInternetAccessObject();
     if (internetAccess) {
       bool status = await _confirmation.showConfirmDialog(context);
@@ -222,7 +261,7 @@ class _UserDevicesState extends State<UserDevices>
     }
   }
 
-  _showDeviceNameDialog(Devices _dv, Info _in) async {
+  _showDeviceNameDialog(SpcificDevices _dv, SpecificInfo _in) async {
     await showDialog<String>(
       context: context,
       builder: (BuildContext context) => new AlertDialog(
@@ -251,7 +290,7 @@ class _UserDevicesState extends State<UserDevices>
     );
   }
 
-  _showDeviceShareDialog(Devices dv) async {
+  _showDeviceShareDialog(SpcificDevices dv) async {
     await showDialog<String>(
       context: context,
       builder: (BuildContext context) => new AlertDialog(
@@ -367,13 +406,16 @@ class _UserDevicesState extends State<UserDevices>
     //             child: _showInternetStatus
     //                 .showInternetStatus(_checkPlatform.isIOS()),
     //             onRefresh: () => checkInternet());
-    return _isLoading
-        ? ShowProgress()
-        : createListView(context, widget.deviceList, infoList);
+    return Scaffold(
+      appBar: AppBar(),
+      body: _isLoading
+          ? ShowProgress()
+          : createListView(context, deviceList, infoList),
+    );
   }
 
-  Widget createListView(
-      BuildContext context, List<Devices> dvList, List<Info> inList) {
+  Widget createListView(BuildContext context, List<SpcificDevices> dvList,
+      List<SpecificInfo> inList) {
     return new GridView.builder(
       gridDelegate:
           const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
@@ -383,11 +425,12 @@ class _UserDevicesState extends State<UserDevices>
     );
   }
 
-  Widget createItem(BuildContext context, deviceList, inList, index) {
+  Widget createItem(BuildContext contex, deviceList, inList, index) {
     return deviceWidget(context, deviceList[index], inList[index]);
   }
 
-  Widget deviceWidget(BuildContext context, Devices device, Info info) {
+  Widget deviceWidget(
+      BuildContext context, SpcificDevices device, SpecificInfo info) {
     return Container(
       child: InkWell(
         onTap: () => Navigator.of(context).push(
@@ -575,7 +618,7 @@ class _UserDevicesState extends State<UserDevices>
   @override
   void onDeviceDeleteError(String errorString) {
     _showDialog.showDialogCustom(context, "Error", errorString);
-    getDeviceInfoList();
+
     setState(() => _isLoading = false);
   }
 
@@ -599,16 +642,11 @@ class _UserDevicesState extends State<UserDevices>
 
   @override
   void onDeviceInfoError() {
-    _showDialog.showDialogCustom(context, "Error", "Device Info not found");
     setState(() => _isLoading = false);
   }
 
   @override
   void onDeviceInfoSuccess(DeviceInfo deviceInfo) {
-    setState(() {
-      infoList = deviceInfo.info!;
-    });
-    Future.delayed(const Duration(milliseconds: 500));
     setState(() {
       _isLoading = false;
     });
@@ -636,5 +674,35 @@ class _UserDevicesState extends State<UserDevices>
   void onPowerDeviceSuccess(String? message) {
     _showDialog.showDialogCustom(context, "Success", "Device state changed");
     setState(() => _changeState[message!] = false);
+  }
+
+  @override
+  void onSpecificDeviceError() {
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  @override
+  void onSpecificDeviceInfoError() {
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  @override
+  void onSpecificDeviceInfoSuccess(SpecificDeviceInfo deviceInfo) {
+    setState(() {
+      infoList = deviceInfo.info!;
+      _isLoading = false;
+    });
+  }
+
+  @override
+  void onSpecificDeviceSuccess(SpecificDeviceData userDetails) {
+    setState(() {
+      deviceList = userDetails.devices!;
+    });
+    _getDevicesInfo();
   }
 }

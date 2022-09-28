@@ -11,6 +11,7 @@ import '/home.dart';
 import '/utils/show_dialog.dart';
 import '/login_signup/signup.dart';
 import 'package:flutter/services.dart';
+import '/validators/all_validators.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -102,24 +103,6 @@ class LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
-    String? contactValidator(String? value) {
-      Pattern pattern = r'^[0-9]{10}$';
-      RegExp regex = new RegExp(pattern.toString());
-      if (value!.isEmpty)
-        return 'Contact should not be empty';
-      else if (!regex.hasMatch(value))
-        return 'Contact should only 10 contain numbers';
-      else
-        return null;
-    }
-
-    String? validatePassword(String? value) {
-      if (value!.isEmpty)
-        return 'Please enter password';
-      else
-        return null;
-    }
-
     void _toggle() {
       setState(() {
         _obscureText = !_obscureText;

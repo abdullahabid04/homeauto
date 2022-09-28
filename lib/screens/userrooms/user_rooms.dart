@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:last_home_auto/models/room_data.dart';
+import 'package:last_home_auto/screens/device/my_devices.dart';
 import 'package:last_home_auto/utils/api_response.dart';
 import '../../constants/colors.dart';
 import '../../models/home_data.dart';
@@ -9,6 +10,7 @@ import '../../utils/internet_access.dart';
 import '../../utils/show_dialog.dart';
 import '../../utils/show_internet_status.dart';
 import '/utils/delete_confirmation.dart';
+import '/validators/all_validators.dart';
 
 class UserRooms extends StatefulWidget {
   final roomList;
@@ -59,19 +61,6 @@ class _UserRoomsState extends State<UserRooms> implements RoomScreenContract {
     setState(() {
       this.internetAccess = internetAccess;
     });
-  }
-
-  roomValidator(String? val, String? ignoreName) {
-    RegExp roomNamePattern = new RegExp(r"^(([A-Za-z]+)([1-9]*))$");
-    if (val!.isEmpty) {
-      return 'Please enter home name.';
-    } else if (!roomNamePattern.hasMatch(val) ||
-        val.length < 4 ||
-        val.length > 16) {
-      return "Home Name invalid.";
-    } else {
-      return null;
-    }
   }
 
   _renameRoom(String? user_id, String? room_id, String room_name) async {
@@ -208,7 +197,14 @@ class _UserRoomsState extends State<UserRooms> implements RoomScreenContract {
   Widget homeWidget(BuildContext context, Room room) {
     return Container(
       child: InkWell(
-        onTap: () async {},
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: ((context) => UserDevicesFromRooms(
+                  home_id: room.homeId,
+                  room_id: room.roomId,
+                )),
+          ),
+        ),
         splashColor: kHAutoBlue300,
         child: Container(
           padding:

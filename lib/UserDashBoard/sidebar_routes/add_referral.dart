@@ -5,6 +5,7 @@ import '../../utils/internet_access.dart';
 import '../../utils/show_dialog.dart';
 import '../../utils/show_progress.dart';
 import '/models/my_referrals_data.dart';
+import '/validators/all_validators.dart';
 
 class AddReferral extends StatefulWidget {
   final User? user;
@@ -67,34 +68,6 @@ class _AddReferralState extends State<AddReferral>
       BuildContext context, FocusNode current, FocusNode next) {
     current.unfocus();
     FocusScope.of(context).requestFocus(next);
-  }
-
-  String? nameValidator(String? value) {
-    Pattern pattern = r'^[a-zA-Z0-9/s]+$';
-    Pattern pattern2 = r'^([0-9])+[a-zA-Z0-9/s]+$';
-    RegExp regex = new RegExp(pattern.toString());
-    RegExp regex2 = new RegExp(pattern2.toString());
-    if (value!.isEmpty)
-      return 'Name should not be empty';
-    else if (!regex.hasMatch(value))
-      return 'Name should not contain special character';
-    else if (regex2.hasMatch(value))
-      return 'Name should not start with alpanumerics';
-    else if (value.length <= 3)
-      return "Name should have more than 3 characters";
-    else
-      return null;
-  }
-
-  String? contactValidator(String? value) {
-    Pattern pattern = r'^[0-9]{10}$';
-    RegExp regex = new RegExp(pattern.toString());
-    if (value!.isEmpty)
-      return 'Contact should not be empty';
-    else if (!regex.hasMatch(value))
-      return 'Contact should only 10 contain numbers';
-    else
-      return null;
   }
 
   @override

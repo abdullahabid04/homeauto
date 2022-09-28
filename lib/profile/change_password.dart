@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import '/utils/show_internet_status.dart';
 import '/utils/check_platform.dart';
 import 'package:flutter/cupertino.dart';
+import '/validators/all_validators.dart';
 
 class ChangePassword extends StatefulWidget {
   User? user;
@@ -112,33 +113,6 @@ class ChangePasswordState extends State<ChangePassword>
     }
   }
 
-  String? passwordValidator(String? value) {
-    Pattern pattern =
-        r'^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})';
-    RegExp regex = new RegExp(pattern.toString());
-    if (!regex.hasMatch(value!))
-      return 'Enter valid password';
-    else
-      return null;
-  }
-
-  String? newPasswordValidator(String? value) {
-    Pattern pattern =
-        r'^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})';
-    RegExp regex = new RegExp(pattern.toString());
-    if (!regex.hasMatch(value!))
-      return 'Enter valid password';
-    else
-      return null;
-  }
-
-  String? oldPasswordValidator(String? value) {
-    if (value == "" || value == null) {
-      return "Please enter old password";
-    }
-    return null;
-  }
-
   Widget _showBody(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
@@ -226,7 +200,7 @@ class ChangePasswordState extends State<ChangePassword>
                     onSaved: (value) {
                       _newPassword = value!;
                     },
-                    validator: passwordValidator,
+                    validator: passwordNewValidator,
                     keyboardType: TextInputType.text,
                     obscureText: _obscureTextNewPass,
                     textInputAction: TextInputAction.next,

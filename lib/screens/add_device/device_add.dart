@@ -121,7 +121,7 @@ class _AddDeviceState extends State<AddDevice> implements CreateDeviceContract {
     Navigator.pushAndRemoveUntil<void>(
       context,
       MaterialPageRoute(builder: (BuildContext context) => MyDevices()),
-      ((route) => false),
+      ((route) => true),
     );
   }
 }
