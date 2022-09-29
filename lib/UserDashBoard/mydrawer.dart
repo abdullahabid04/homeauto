@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:last_home_auto/UserDashBoard/sidebar_routes/my_shared_devices.dart';
 import '../models/user_data.dart';
 import '../profile/page/profile_page.dart';
 import '/login_signup/logout.dart';
@@ -6,6 +7,7 @@ import 'sidebar_routes/goto_myhomes.dart';
 import 'sidebar_routes/goto_myrooms.dart';
 import 'sidebar_routes/goto_mydevices.dart';
 import 'sidebar_routes/contact_us.dart';
+import 'sidebar_routes/my_shared_members.dart';
 import 'sidebar_routes/referral_program.dart';
 
 class MyDrawer extends StatefulWidget {
@@ -65,22 +67,34 @@ class _MyDrawerState extends State<MyDrawer> {
                 leading: const Icon(Icons.home),
                 title: const Text('My Homes'),
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: ((context) => MyHomes())));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: ((context) => MyHomes()),
+                    ),
+                  );
                 }),
             ListTile(
                 leading: const Icon(Icons.room),
                 title: const Text('My Rooms'),
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: ((context) => MyRooms())));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: ((context) => MyRooms()),
+                    ),
+                  );
                 }),
             ListTile(
                 leading: const Icon(Icons.devices),
                 title: const Text('My Devices'),
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: ((context) => MyDevices())));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: ((context) => MyDevices()),
+                    ),
+                  );
                 }),
             ListTile(
                 leading: const Icon(Icons.person),
@@ -99,11 +113,26 @@ class _MyDrawerState extends State<MyDrawer> {
             ListTile(
                 leading: const Icon(Icons.share),
                 title: const Text('Shared devices'),
-                onTap: () {}),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: ((context) => MySharedDevices()),
+                    ),
+                  );
+                }),
             ListTile(
-                leading: const Icon(Icons.person),
-                title: const Text('Shared Members'),
-                onTap: () {}),
+              leading: const Icon(Icons.person),
+              title: const Text('Shared Members'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: ((context) => SharedMembers()),
+                  ),
+                );
+              },
+            ),
             ListTile(
                 leading: const Icon(Icons.call),
                 title: const Text('Contact us'),
@@ -133,9 +162,10 @@ class _MyDrawerState extends State<MyDrawer> {
                   );
                 }),
             ListTile(
-                leading: const Icon(Icons.logout),
-                title: const Text('Log Out'),
-                onTap: () => _logOut.logout(context)),
+              leading: const Icon(Icons.logout),
+              title: const Text('Log Out'),
+              onTap: () => _logOut.logout(context),
+            ),
           ],
         ),
       ),

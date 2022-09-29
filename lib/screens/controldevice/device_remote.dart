@@ -48,9 +48,10 @@ class _DeviceRemoteState extends State<DeviceRemote>
     return new GridView.builder(
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 200,
+        mainAxisExtent: 175,
         childAspectRatio: 1.0,
-        crossAxisSpacing: 20,
-        mainAxisSpacing: 20,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
       ),
       padding: EdgeInsetsGeometry.lerp(
         EdgeInsets.symmetric(
@@ -73,13 +74,26 @@ class _DeviceRemoteState extends State<DeviceRemote>
 
   Widget portWidget(BuildContext context, Control control, Remote remote) {
     return Container(
-      width: 128,
-      height: 128,
       child: ClipOval(
         child: Material(
           color: Colors.black12,
-          child: Column(
-            children: [],
+          child: Center(
+            child: Container(
+              child: Center(
+                child: Ink.image(
+                  colorFilter: const ColorFilter.mode(
+                    Colors.white,
+                    BlendMode.modulate,
+                  ),
+                  image: NetworkImage(
+                      "https://webstockreview.net/images/button-clipart-power-19.png"),
+                  fit: BoxFit.fill,
+                  width: 32,
+                  height: 32,
+                  child: InkWell(onTap: () => {}),
+                ),
+              ),
+            ),
           ),
         ),
       ),
