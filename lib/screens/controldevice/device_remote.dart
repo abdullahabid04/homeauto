@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:last_home_auto/models/control_device.dart';
 import 'package:last_home_auto/models/remote_control.dart';
 import 'package:last_home_auto/utils/show_progress.dart';
 
@@ -11,15 +12,17 @@ class DeviceRemote extends StatefulWidget {
 }
 
 class _DeviceRemoteState extends State<DeviceRemote>
-    implements DeviceRemoteControlContract {
+    implements DeviceRemoteControlContract, DeviceControlContract {
   bool _isLoading = true;
   late DeviceRemoteControlPresenter _presenter;
+  late DeviceControlPresenter _controlPresenter;
   List<Control> _control = <Control>[];
   List<Remote> _remote = <Remote>[];
 
   @override
   void initState() {
     _presenter = new DeviceRemoteControlPresenter(this);
+    _controlPresenter = new DeviceControlPresenter(this);
     _getDeviceRemote();
     super.initState();
   }
@@ -31,6 +34,11 @@ class _DeviceRemoteState extends State<DeviceRemote>
 
   _getDeviceRemote() async {
     await _presenter.doGetRemote(widget.device_id);
+  }
+
+  _controlDevicePort(
+      String device_id, String port_id, String port_status) async {
+    await _controlPresenter.doControlDevice(device_id, port_id, port_status);
   }
 
   @override
@@ -76,21 +84,38 @@ class _DeviceRemoteState extends State<DeviceRemote>
     return Container(
       child: ClipOval(
         child: Material(
-          color: Colors.black12,
+          color: Colors.transparent,
           child: Center(
             child: Container(
               child: Center(
                 child: Ink.image(
+                  padding: EdgeInsetsGeometry.lerp(
+                    EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 10,
+                    ),
+                    EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                    5.0,
+                  ),
                   colorFilter: const ColorFilter.mode(
                     Colors.white,
                     BlendMode.modulate,
                   ),
-                  image: NetworkImage(
-                      "https://webstockreview.net/images/button-clipart-power-19.png"),
+                  image: AssetImage(
+                    "assets/icons/power-button.png",
+                  ),
                   fit: BoxFit.fill,
-                  width: 32,
-                  height: 32,
-                  child: InkWell(onTap: () => {}),
+                  child: InkWell(
+                    onTap: () {
+                      control.portStatus =
+                          control.portStatus! == "1" ? "0" : "1";
+                      _controlDevicePort(
+                        control.deviceId!,
+                        control.portId!,
+                        control.portStatus!,
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
@@ -115,4 +140,10 @@ class _DeviceRemoteState extends State<DeviceRemote>
       _isLoading = false;
     });
   }
+
+  @override
+  void onControlDeviceError() {}
+
+  @override
+  void onControlDeviceSuccess(String? message) {}
 }
