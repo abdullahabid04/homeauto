@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:last_home_auto/models/get_all_count_names.dart';
+import '../../userpreferances/user_preferances.dart';
 import '/profile/page/edit_profile_page.dart';
 import '/profile/widget/button_widget.dart';
 import '/profile/widget/numbers_widget.dart';
@@ -12,16 +14,21 @@ import '/utils/show_internet_status.dart';
 import '/utils/check_platform.dart';
 
 class ProfilePage extends StatefulWidget {
-  User? user;
-  Function? callbackUser;
+  final User? user;
+  final Function? callbackUser;
   ProfilePage({Key? key, this.user, this.callbackUser}) : super(key: key);
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> implements UserContract {
+class _ProfilePageState extends State<ProfilePage>
+    implements UserContract, GetNamesCountContract {
   bool _isLoading = true;
   bool internetAccess = false;
+  String user_id = UserSharedPreferences.getUserUniqueId() ?? "";
+  late int? _device_count;
+  late int? _room_count;
+  late int? _home_count;
   late CheckPlatform _checkPlatform;
   late User? user;
 
@@ -29,6 +36,7 @@ class _ProfilePageState extends State<ProfilePage> implements UserContract {
   late ShowInternetStatus _showInternetStatus;
 
   late UserPresenter _userPresenter;
+  late GetNamesCountPresenter _presenter;
 
   @override
   initState() {
@@ -37,10 +45,12 @@ class _ProfilePageState extends State<ProfilePage> implements UserContract {
     ]);
     showDialog = new ShowDialog();
     _userPresenter = new UserPresenter(this);
+    _presenter = new GetNamesCountPresenter(this);
     _checkPlatform = new CheckPlatform(context: context);
     _showInternetStatus = new ShowInternetStatus();
     getInternetAccessObject();
     getUserProfile();
+    getAllNamesCount();
     super.initState();
   }
 
@@ -58,7 +68,11 @@ class _ProfilePageState extends State<ProfilePage> implements UserContract {
   }
 
   getUserProfile() async {
-    await _userPresenter.doGetUser(widget.user!.userId!);
+    await _userPresenter.doGetUser(user_id);
+  }
+
+  getAllNamesCount() async {
+    await _presenter.doGetAllNamesCounts(user_id);
   }
 
   @override
@@ -85,9 +99,11 @@ class _ProfilePageState extends State<ProfilePage> implements UserContract {
                 const SizedBox(height: 24),
                 buildName(user!),
                 const SizedBox(height: 24),
-                Center(child: buildUpgradeButton()),
-                const SizedBox(height: 24),
-                NumbersWidget(),
+                NumbersWidget(
+                  device_count: _device_count ?? 0,
+                  room_count: _room_count ?? 0,
+                  home_count: _home_count ?? 0,
+                ),
                 const SizedBox(height: 48),
               ],
             ),
@@ -124,6 +140,24 @@ class _ProfilePageState extends State<ProfilePage> implements UserContract {
   void onUserSuccess(User userDetails) {
     setState(() {
       user = userDetails;
+      _isLoading = false;
+    });
+  }
+
+  @override
+  void onGetNamesCountError() {
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  @override
+  void onGetNamesCountSuccess(
+      int device_count, int room_count, int home_count) {
+    setState(() {
+      _device_count = device_count;
+      _room_count = room_count;
+      _home_count = home_count;
       _isLoading = false;
     });
   }

@@ -290,7 +290,16 @@ class LoginScreenState extends State<LoginScreen>
 
   @override
   void onLoginSuccess(User user) async {
-    await UserSharedPreferences.setLoggedInStatus(true);
+    UserSharedPreferences.setLoggedInStatus(true);
+    UserSharedPreferences.setUserId(int.parse(user.id.toString()));
+    UserSharedPreferences.setUserUniqueId(user.userId!);
+    UserSharedPreferences.setUserName(user.userName!);
+    UserSharedPreferences.setUserEmail(user.eMail!);
+    UserSharedPreferences.setUserMobileNo(user.mobileNo!);
+    UserSharedPreferences.setUserAccountPassword(user.password!);
+    UserSharedPreferences.setUserCity(user.city!);
+    UserSharedPreferences.setUserAddress(user.address!);
+    UserSharedPreferences.setUserCreatedDate(user.dateCreated!);
     setState(() => _isLoadingValue = false);
     final form = formKey.currentState;
     form!.reset();

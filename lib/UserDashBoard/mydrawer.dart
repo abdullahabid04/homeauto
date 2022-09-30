@@ -103,10 +103,7 @@ class _MyDrawerState extends State<MyDrawer> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: ((context) => ProfilePage(
-                            user: this.user,
-                            callbackUser: this.callbackUser,
-                          )),
+                      builder: ((context) => ProfilePage()),
                     ),
                   );
                 }),

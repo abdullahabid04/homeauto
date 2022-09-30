@@ -62,7 +62,7 @@ String? cityValidator(String? value) {
 }
 
 String? contactValidator(String? value) {
-  Pattern pattern = r'^[0-9]{10}$';
+  Pattern pattern = r'^[0-9]{11}$';
   RegExp regex = new RegExp(pattern.toString());
   if (value!.isEmpty)
     return 'Contact should not be empty';
@@ -125,7 +125,7 @@ String? homeValidator(String? val, String? ignoreName) {
     return 'Please enter home name.';
   } else if (!homeNamePattern.hasMatch(val) ||
       val.length < 3 ||
-      val.length > 8) {
+      val.length > 16) {
     return "Home Name invalid.";
   } else {
     return null;
@@ -138,7 +138,7 @@ String? deviceValidator(String? val, String? ignoreName) {
     return 'Please enter home name.';
   } else if (!homeNamePattern.hasMatch(val) ||
       val.length < 3 ||
-      val.length > 8) {
+      val.length > 16) {
     return "Home Name invalid.";
   } else {
     return null;

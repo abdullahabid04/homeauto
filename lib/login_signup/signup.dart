@@ -338,8 +338,8 @@ class SignupScreenState extends State<SignupScreen>
   }
 
   @override
-  void onVerifyAccountSuccess(String? message) async {
-    await UserSharedPreferences.setVerifiedStatus(true);
+  void onVerifyAccountSuccess(String? message) {
+    UserSharedPreferences.setVerifiedStatus(true);
     Map result = new Map();
     result['success'] = true;
     result['message'] = message;
