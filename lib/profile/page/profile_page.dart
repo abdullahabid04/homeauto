@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:last_home_auto/models/get_all_count_names.dart';
@@ -12,6 +14,7 @@ import '/utils/internet_access.dart';
 import '/utils/show_dialog.dart';
 import '/utils/show_internet_status.dart';
 import '/utils/check_platform.dart';
+import '/utils/get_image_from_asset.dart';
 
 class ProfilePage extends StatefulWidget {
   final User? user;
@@ -26,9 +29,11 @@ class _ProfilePageState extends State<ProfilePage>
   bool _isLoading = true;
   bool internetAccess = false;
   String user_id = UserSharedPreferences.getUserUniqueId() ?? "";
-  late int? _device_count;
-  late int? _room_count;
-  late int? _home_count;
+  String imagePath = UserSharedPreferences.getUserProfileImagePath() ?? "";
+  File? profileImage;
+  int? _device_count = 0;
+  int? _room_count = 0;
+  int? _home_count = 0;
   late CheckPlatform _checkPlatform;
   late User? user;
 
@@ -43,6 +48,7 @@ class _ProfilePageState extends State<ProfilePage>
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
+    profileImage = File(imagePath);
     showDialog = new ShowDialog();
     _userPresenter = new UserPresenter(this);
     _presenter = new GetNamesCountPresenter(this);
@@ -51,12 +57,21 @@ class _ProfilePageState extends State<ProfilePage>
     getInternetAccessObject();
     getUserProfile();
     getAllNamesCount();
+    _getProfileImage();
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  _getProfileImage() async {
+    if (imagePath != "") {
+      profileImage = File(imagePath);
+    } else {
+      profileImage = await getImageFileFromAssets("assets/images/user.png");
+    }
   }
 
   Future getInternetAccessObject() async {
@@ -85,8 +100,7 @@ class _ProfilePageState extends State<ProfilePage>
               physics: BouncingScrollPhysics(),
               children: [
                 ProfileWidget(
-                  imagePath:
-                      "https://digitalsynopsis.com/wp-content/uploads/2014/06/supercar-wallpapers-bugatti-3.jpg",
+                  imageFile: profileImage,
                   onClicked: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -140,6 +154,11 @@ class _ProfilePageState extends State<ProfilePage>
   void onUserSuccess(User userDetails) {
     setState(() {
       user = userDetails;
+    });
+    Future.delayed(
+      Duration(milliseconds: 250),
+    );
+    setState(() {
       _isLoading = false;
     });
   }
@@ -158,6 +177,11 @@ class _ProfilePageState extends State<ProfilePage>
       _device_count = device_count;
       _room_count = room_count;
       _home_count = home_count;
+    });
+    Future.delayed(
+      Duration(milliseconds: 250),
+    );
+    setState(() {
       _isLoading = false;
     });
   }

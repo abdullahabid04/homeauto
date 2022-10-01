@@ -1,8 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:last_home_auto/constants/image_sources.dart';
 import 'package:last_home_auto/profile/change_password.dart';
+import 'package:last_home_auto/userpreferances/user_preferances.dart';
+import 'package:last_home_auto/utils/custom_exception.dart';
 import '../../constants/colors.dart';
+import '../../utils/get_image_from_asset.dart';
+import '../../validators/all_validators.dart';
 import '/profile/widget/button_widget.dart';
 import '/profile/widget/profile_widget.dart';
 import '/profile/widget/textfield_widget.dart';
@@ -12,10 +17,11 @@ import '/utils/internet_access.dart';
 import '/utils/show_dialog.dart';
 import '/utils/show_internet_status.dart';
 import '/utils/check_platform.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EditProfilePage extends StatefulWidget {
-  User? user;
-  Function? callbackUser;
+  final User? user;
+  final Function? callbackUser;
   EditProfilePage({this.user, this.callbackUser});
   @override
   _EditProfilePageState createState() => _EditProfilePageState();
@@ -26,8 +32,11 @@ class _EditProfilePageState extends State<EditProfilePage>
   bool _isLoading = true;
   bool internetAccess = false;
   late User? user;
+  File? profileImage;
 
-  late ShowDialog showDialog;
+  String imagePath = UserSharedPreferences.getUserProfileImagePath() ?? "";
+
+  late ShowDialog _showDialog;
   late ShowInternetStatus _showInternetStatus;
 
   late UserPresenter _userPresenter;
@@ -49,13 +58,14 @@ class _EditProfilePageState extends State<EditProfilePage>
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
-    showDialog = new ShowDialog();
+    _showDialog = new ShowDialog();
     _userPresenter = new UserPresenter(this);
     _userUpdatePresenter = new UserUpdatePresenter(this);
     _showInternetStatus = new ShowInternetStatus();
     getInternetAccessObject();
     getUserProfile();
     setUserVariables(widget.user!);
+    _getProfileImage();
     super.initState();
   }
 
@@ -92,6 +102,71 @@ class _EditProfilePageState extends State<EditProfilePage>
         .showSnackBar(new SnackBar(content: new Text(text)));
   }
 
+  _getProfileImage() async {
+    if (imagePath != "") {
+      profileImage = File(imagePath);
+    } else {
+      profileImage = await getImageFileFromAssets("assets/images/user.png");
+    }
+  }
+
+  Future<void> _pickImage(MyImageSource source) async {
+    try {
+      ImageSource _source;
+      if (source == MyImageSource.camera) {
+        _source = ImageSource.camera;
+      } else if (source == MyImageSource.gallery) {
+        _source = ImageSource.gallery;
+      } else {
+        _source = ImageSource.gallery;
+      }
+
+      final image = await ImagePicker().pickImage(source: _source);
+
+      if (image == null) {
+        return;
+      }
+      final imageTemp = File(image.path);
+      setState(() {
+        profileImage = imageTemp;
+      });
+      UserSharedPreferences.setUserProfileImagePath(image.path);
+    } on PlatformException catch (e) {
+      throw FormException(e.toString());
+    }
+  }
+
+  _showSelectImageSourceDialog() async {
+    await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => new AlertDialog(
+        contentPadding: const EdgeInsets.all(5.0),
+        content: Container(
+          height: 150,
+          child: ListView(
+            children: [
+              ListTile(
+                title: Text("Pick Image"),
+                subtitle: Text("Camera"),
+                trailing: Icon(Icons.arrow_circle_right),
+                leading: Icon(Icons.camera_alt),
+                onTap: () => _pickImage(MyImageSource.camera),
+              ),
+              ListTile(
+                title: Text("Pick Image"),
+                subtitle: Text("Gallery"),
+                trailing: Icon(Icons.arrow_circle_right),
+                leading: Icon(Icons.browse_gallery),
+                onTap: () => _pickImage(MyImageSource.gallery),
+              ),
+            ],
+          ),
+        ),
+        actions: <Widget>[],
+      ),
+    );
+  }
+
   getUserProfile() async {
     await _userPresenter.doGetUser(widget.user!.userId!);
   }
@@ -113,14 +188,14 @@ class _EditProfilePageState extends State<EditProfilePage>
               _userId, _name, _address, _city, _mobile);
         } else {
           this
-              .showDialog
+              ._showDialog
               .showDialogCustom(context, "Success", "Profile Details Updated");
         }
       } else {
         _autoValidate = true;
       }
     } else {
-      this.showDialog.showDialogCustom(context, "Internet Connection Problem",
+      this._showDialog.showDialogCustom(context, "Internet Connection Problem",
           "Please check your internet connection",
           fontSize: 17.0, boxHeight: 58.0);
     }
@@ -130,60 +205,6 @@ class _EditProfilePageState extends State<EditProfilePage>
       BuildContext context, FocusNode current, FocusNode next) {
     current.unfocus();
     FocusScope.of(context).requestFocus(next);
-  }
-
-  String? cityValidator(String? value) {
-    Pattern pattern = r'^[a-zA-Z]+$';
-    RegExp regex = new RegExp(pattern.toString());
-    if (value!.isEmpty)
-      return 'City should not be empty';
-    else if (!regex.hasMatch(value))
-      return 'City should not contain special characters';
-    else if (value.length <= 2)
-      return "City should have more than 2 characters";
-    else
-      return null;
-  }
-
-  String? contactValidator(String? value) {
-    Pattern pattern = r'^[0-9]{10}$';
-    RegExp regex = new RegExp(pattern.toString());
-    if (value!.isEmpty)
-      return 'Contact should not be empty';
-    else if (!regex.hasMatch(value))
-      return 'Contact should only 10 contain numbers';
-    else
-      return null;
-  }
-
-  String? nameValidator(String? value) {
-    Pattern pattern = r'^[a-zA-Z0-9]+$';
-    Pattern pattern2 = r'^([0-9])+[a-zA-Z0-9]+$';
-    RegExp regex = new RegExp(pattern.toString());
-    RegExp regex2 = new RegExp(pattern2.toString());
-    if (value!.isEmpty)
-      return 'Name should not be empty';
-    else if (!regex.hasMatch(value))
-      return 'Name should not contain special character';
-    else if (regex2.hasMatch(value))
-      return 'Name should not start with alpanumerics';
-    else if (value.length <= 3)
-      return "Name should have more than 3 characters";
-    else
-      return null;
-  }
-
-  String? addressValidator(String? value) {
-    Pattern pattern = r'^[0-9a-zA-Z,/. ]+$';
-    RegExp regex = new RegExp(pattern.toString());
-    if (value!.isEmpty)
-      return 'Address should not be empty';
-    else if (!regex.hasMatch(value))
-      return 'Address should have only [,/. ] special characters';
-    else if (value.length <= 8)
-      return "Address should have more than 8 characters";
-    else
-      return null;
   }
 
   Widget _buldEditProfileForm(BuildContext context) {
@@ -388,10 +409,9 @@ class _EditProfilePageState extends State<EditProfilePage>
         physics: BouncingScrollPhysics(),
         children: [
           ProfileWidget(
-            imagePath:
-                "https://digitalsynopsis.com/wp-content/uploads/2014/06/supercar-wallpapers-bugatti-3.jpg",
+            imageFile: profileImage,
             isEdit: true,
-            onClicked: () async {},
+            onClicked: () => _showSelectImageSourceDialog(),
           ),
           _buldEditProfileForm(context),
         ],
@@ -420,7 +440,7 @@ class _EditProfilePageState extends State<EditProfilePage>
     setState(() {
       _isLoading = false;
     });
-    showDialog.showDialogCustom(context, "Error", errorString);
+    _showDialog.showDialogCustom(context, "Error", errorString);
   }
 
   @override
@@ -428,7 +448,7 @@ class _EditProfilePageState extends State<EditProfilePage>
     setState(() {
       _isLoading = false;
     });
-    showDialog.showDialogCustom(context, "Success", message);
+    _showDialog.showDialogCustom(context, "Success", message);
   }
 
   @override
@@ -436,7 +456,7 @@ class _EditProfilePageState extends State<EditProfilePage>
     setState(() {
       _isLoading = false;
     });
-    showDialog.showDialogCustom(context, "Error", "content");
+    _showDialog.showDialogCustom(context, "Error", "content");
   }
 
   @override
@@ -446,7 +466,7 @@ class _EditProfilePageState extends State<EditProfilePage>
       user = userDetails;
       _isLoading = false;
     });
-    showDialog.showDialogCustom(
+    _showDialog.showDialogCustom(
         context, "Success", "User fetched Successfully");
   }
 
@@ -455,7 +475,7 @@ class _EditProfilePageState extends State<EditProfilePage>
     setState(() {
       _isLoading = false;
     });
-    showDialog.showDialogCustom(context, "Error", errorString);
+    _showDialog.showDialogCustom(context, "Error", errorString);
   }
 
   @override
@@ -465,7 +485,7 @@ class _EditProfilePageState extends State<EditProfilePage>
       user = userDetails;
       _isLoading = false;
     });
-    showDialog.showDialogCustom(
+    _showDialog.showDialogCustom(
         context, "Success", "User updated successfully");
   }
 }

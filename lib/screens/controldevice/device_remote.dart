@@ -84,7 +84,9 @@ class _DeviceRemoteState extends State<DeviceRemote>
     return Container(
       child: ClipOval(
         child: Material(
-          color: Colors.transparent,
+          color: control.portStatus == "1"
+              ? Colors.green.shade100.withOpacity(0.9)
+              : Colors.red.shade100.withOpacity(0.9),
           child: Center(
             child: Container(
               child: Center(
@@ -107,8 +109,10 @@ class _DeviceRemoteState extends State<DeviceRemote>
                   fit: BoxFit.fill,
                   child: InkWell(
                     onTap: () {
-                      control.portStatus =
-                          control.portStatus! == "1" ? "0" : "1";
+                      setState(() {
+                        control.portStatus =
+                            control.portStatus! == "1" ? "0" : "1";
+                      });
                       _controlDevicePort(
                         control.deviceId!,
                         control.portId!,
